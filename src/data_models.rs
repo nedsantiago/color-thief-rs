@@ -1,6 +1,8 @@
 // use std::collections::HashMap;
 
 
+pub type Dimensions = (u32, u32);
+
 pub struct ColorBox {
     pub r_min: u8,
     pub r_max: u8,
