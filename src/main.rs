@@ -1,19 +1,16 @@
 //mod data_models;
 mod img_io;
+use std::error::Error;
 
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     // Open an image file
     // Convert the image to RGBA
     let img = "/home/nix-admin/.config/bg-img/wallhaven-ox6d57_1920x1080.png";
-    match img_io::open_img_rgba(img) {
-        Ok(img) => {
-            println!("Dimensions: {:?}", img.dimensions());
-        },
-        Err(err) => {
-            println!("Error {err}")
-        }
-    }
+    let img = img_io::open_img_rgba(img)?;
+    println!("Dimensions: {:?}", img.dimensions());
+
+    Ok(())
     // Get Width image
     // Get Height of image
     // Get number of pixels h x w
