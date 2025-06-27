@@ -1,4 +1,7 @@
-pub struct Box {
+// use std::collections::HashMap;
+
+
+pub struct ColorBox {
     pub r_min: u8,
     pub r_max: u8,
     pub g_min: u8,
@@ -8,7 +11,7 @@ pub struct Box {
     // History goes here
 }
 
-impl Box {
+impl ColorBox {
     pub fn volume(&self) -> u32 {
         (self.r_max - self.r_min) as u32 *
             (self.g_max - self.g_min) as u32 *

@@ -1,11 +1,21 @@
-mod data_models;
+//mod data_models;
+mod img_io;
 
 
 fn main() {
-    let color_box = data_models::Box {
-        r_min: 10, r_max: 110,
-        g_min: 10, g_max: 110,
-        b_min: 10, b_max: 110,
-    };
-    println!("{:?}", color_box.volume());
+    // Open an image file
+    // Convert the image to RGBA
+    let img = "/home/nix-admin/.config/bg-img/wallhaven-ox6d57_1920x1080.png";
+    match img_io::open_img_rgba(img) {
+        Ok(img) => {
+            println!("Dimensions: {:?}", img.dimensions());
+        },
+        Err(err) => {
+            println!("Error {err}")
+        }
+    }
+    // Get Width image
+    // Get Height of image
+    // Get number of pixels h x w
+    // Make an aray of rgba filtering out half alphas
 }
