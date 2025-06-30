@@ -3,7 +3,6 @@ mod img_io;
 mod data_models;
 use std::error::Error;
 use std::vec;
-use image::{ Pixel, Rgba };
 
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -11,9 +10,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let img_path = "/home/nix-admin/.config/bg-img/wallhaven-ox6d57_1920x1080.png";
     // Open and Convert the image to RGBA
     let img: image::RgbaImage = img_io::open_img_rgba(img_path)?;
-
-    // Get number of pixels h x w
-    let total_pixel_count: u32 = img.width() * img.height();
 
     // NOTE FUTURE: Add Failure mode when Image too large
 
