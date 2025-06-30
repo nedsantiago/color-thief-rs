@@ -9,6 +9,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // NOTE FUTURE: Take file as cli argument
     let img_path = "/home/nix-admin/.config/bg-img/wallhaven-ox6d57_1920x1080.png";
     let max_colors: i8 = 10;
+
     // Open and Convert the image to RGBA
     let img: image::RgbaImage = img_io::open_img_rgba(img_path)?;
 
