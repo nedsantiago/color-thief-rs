@@ -1,6 +1,6 @@
 //mod data_models;
 mod img_io;
-mod data_models;
+mod color_calc;
 use std::error::Error;
 use std::vec;
 
@@ -8,7 +8,7 @@ use std::vec;
 fn main() -> Result<(), Box<dyn Error>> {
     // NOTE FUTURE: Take file as cli argument
     let img_path = "/home/nix-admin/.config/bg-img/wallhaven-ox6d57_1920x1080.png";
-    let max_colors: i8 = 10;
+    let max_colors: u8 = 10;
 
     // Open and Convert the image to RGBA
     let img: image::RgbaImage = img_io::open_img_rgba(img_path)?;
@@ -27,6 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Calculate colors
+    let history = color_calc::get_history(&valid_pixels);
 
     Ok(())
 }

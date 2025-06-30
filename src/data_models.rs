@@ -1,5 +1,10 @@
 // use std::collections::HashMap;
 
+enum rgb {
+    red,
+    green,
+    blue
+}
 
 pub struct ColorBox {
     pub r_min: u8,
@@ -18,3 +23,5 @@ impl ColorBox {
             (self.b_max - self.b_min) as u32
     }
 }
+
+

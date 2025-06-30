@@ -1,8 +1,13 @@
-pub struct MMCQ {
-    SIGNIFICANT_BITS: u8 = 5,
-    BIT_SHIFT: u8 = 8 - SIGNIFICANT_BITS,
+use std::collections::HashMap;
+use image::Rgba;
+
+pub enum RGB {
+    red,
+    green,
+    blue
 }
 
-impl MMCQ {
-    pub fn get_history(&self)
+pub fn get_history(pixels: &Vec<&Rgba<u8>>) -> HashMap<RGB,u8> {
+    let mut color_bins = HashMap::new();
+    color_bins
 }
