@@ -28,6 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Calculate colors
     let history = color_calc::get_history(&valid_pixels);
+    println!("(r,g,b): {}, {}, {}", history.red, history.green, history.blue); 
 
     Ok(())
 }
