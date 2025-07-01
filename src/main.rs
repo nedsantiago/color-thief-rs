@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Calculate colors
-    let history = color_calc::MMCQ::get_history(&valid_pixels);
+    let history = color_calc::MMCQ::get_frequency_map(&valid_pixels);
     // println!("(r,g,b): {}, {}, {}", history.red, history.green, history.blue); 
 
     Ok(())

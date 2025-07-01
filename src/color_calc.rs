@@ -26,7 +26,7 @@ impl MMCQ {
     const SIGNIFICANT_BITS: u8 = 5;
     const bit_shift: u8 = 8 - Self::SIGNIFICANT_BITS;
 
-    pub fn get_history(pixels: &Vec<&Rgba<u8>>) -> HashMap<u32, u32> {
+    pub fn get_frequency_map(pixels: &Vec<&Rgba<u8>>) -> HashMap<u32, u32> {
         let mut color = Color{
             red: 0,
             green: 0,
