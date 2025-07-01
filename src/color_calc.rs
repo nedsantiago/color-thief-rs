@@ -26,23 +26,24 @@ impl MMCQ {
     const SIGNIFICANT_BITS: u8 = 5;
     const bit_shift: u8 = 8 - Self::SIGNIFICANT_BITS;
 
-    pub fn get_history(pixels: &Vec<&Rgba<u8>>) -> Color {
+    pub fn get_history(pixels: &Vec<&Rgba<u8>>) -> HashMap<u32, u32> {
         let mut color = Color{
             red: 0,
             green: 0,
             blue: 0,
         };
 
-        // let history = HashMap::new();
+        let mut history: HashMap<u32, u32> = HashMap::new();
     
         // Get color index
         // Shift colors based on bit shift
         // Check minimums and maximums
         for px in pixels {
 
+            // Get Pixel value
             let [red, green, blue, alpha] = px.0;
 
-            let red_shift = &red >> Self::bit_shift;
+            let red_shift = red >> Self::bit_shift;
             let green_shift = green >> Self::bit_shift;
             let blue_shift = blue >> Self::bit_shift;
             println!("Pixels: {:?}", px);
@@ -50,8 +51,13 @@ impl MMCQ {
             color.red = red_shift;
             color.green = green_shift;
             color.blue = blue_shift;
+
+            let hash: u32 = Self::get_color_hash(color.red, color.green, color.blue);
+            history.insert(
+                hash, 0
+            );
         }
-        color
+        history
     }
 
     fn get_color_hash(red: u8, green: u8, blue: u8) -> u32 {
