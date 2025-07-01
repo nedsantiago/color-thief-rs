@@ -48,16 +48,23 @@ impl MMCQ {
         color
     }
 
-    fn get_color_index(red: u8, green: u8, blue: u8) {
-        (red << (2 * Self::SIGNIFICANT_BITS) + green << Self::SIGNIFICANT_BITS + blue);
+    fn get_color_hash(red: u8, green: u8, blue: u8) -> u32 {
+        let red_lshift: u32 = (red as u32) << 2 * Self::SIGNIFICANT_BITS;
+        let green_lshift: u32 = (green as u32) << Self::SIGNIFICANT_BITS;
+        let blue_lshift: u32 = blue as u32;
+        red_lshift + green_lshift + blue_lshift
     }
 }
 
-// #[cfg(test)]
-// mod test {
-//     use super::*;
-// 
-//     fn test_get_history() {
-//         MMCQ::get_history();
-//     }
-// }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_color_hash() {
+        let input = [15, 12, 10];
+        let resulted = MMCQ::get_color_hash(input[0], input[1], input[2]);
+        let expected = 15754;
+        assert_eq!(resulted, expected, "\nEXPECTED\n{}\nRESULTED\n{}", expected, resulted);
+    }
+}
