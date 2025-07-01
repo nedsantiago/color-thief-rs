@@ -1,12 +1,6 @@
 use std::collections::HashMap;
 use image::Rgba;
 
-pub enum RGB {
-    red,
-    green,
-    blue
-}
-
 pub struct Color {
     pub red: u8,
     pub green: u8,
@@ -15,8 +9,20 @@ pub struct Color {
 
 pub struct MMCQ {}
 
+/// Modified Median Cut Quantization (MMCQ) encapsulates all the
+/// functionality and constants for conducting the algorithm.
+/// The algorithm uses binary operations. It removes smaller-
+/// valued bits and leaves the larger-valued bits (i.e. 00001111 becomes
+/// 00001 taking away the right-most bits) to build its palette with.
+/// Defaults to 5 significant bits.
+///
+/// # Examples
+/// ```rust
+/// let result = color_calc::MMCQ::get_color_hash(15, 12, 10)
+/// assert_eq!(result, 15754);
+/// ```
 impl MMCQ {
-    // Settings for color binning
+    // Settings for color binning, how many bits to preserve
     const SIGNIFICANT_BITS: u8 = 5;
     const bit_shift: u8 = 8 - Self::SIGNIFICANT_BITS;
 
