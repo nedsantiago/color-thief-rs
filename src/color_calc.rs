@@ -1,13 +1,11 @@
 use std::collections::HashMap;
 use image::Rgba;
 
-pub struct Color {
+struct Color {
     pub red: u8,
     pub green: u8,
     pub blue: u8,
 }
-
-pub struct MMCQ {}
 
 /// Modified Median Cut Quantization (MMCQ) encapsulates all the
 /// functionality and constants for conducting the algorithm.
@@ -21,18 +19,14 @@ pub struct MMCQ {}
 /// let result = color_calc::MMCQ::get_color_hash(15, 12, 10)
 /// assert_eq!(result, 15754);
 /// ```
+pub struct MMCQ {}
+
 impl MMCQ {
     // Settings for color binning, how many bits to preserve
     const SIGNIFICANT_BITS: u8 = 5;
     const bit_shift: u8 = 8 - Self::SIGNIFICANT_BITS;
 
     pub fn get_frequency_map(pixels: &Vec<&Rgba<u8>>) -> HashMap<u32, u32> {
-        let mut color = Color{
-            red: 0,
-            green: 0,
-            blue: 0,
-        };
-
         let mut history: HashMap<u32, u32> = HashMap::new();
     
         // Get color index
@@ -43,19 +37,18 @@ impl MMCQ {
             // Get Pixel value
             let [red, green, blue, alpha] = px.0;
 
-            let red_shift = red >> Self::bit_shift;
-            let green_shift = green >> Self::bit_shift;
-            let blue_shift = blue >> Self::bit_shift;
-            println!("Pixels: {:?}", px);
+            // Shift binary to right
+            let red_rshift = red >> Self::bit_shift;
+            let green_rshift = green >> Self::bit_shift;
+            let blue_rshift = blue >> Self::bit_shift;
 
-            color.red = red_shift;
-            color.green = green_shift;
-            color.blue = blue_shift;
-
-            let hash: u32 = Self::get_color_hash(color.red, color.green, color.blue);
-            history.insert(
-                hash, 0
-            );
+            // Calculate a hash index
+            let hash: u32 = Self::get_color_hash(red_rshift, green_rshift, blue_rshift);
+            // Count how many times color combination appears in image
+            match history.get(&hash) {
+                Some(count) => { history.insert(hash, count + 1); }
+                None => { history.insert(hash, 1); }
+            }
         }
         history
     }
