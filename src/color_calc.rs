@@ -7,7 +7,7 @@ pub enum RGB {
     blue
 }
 
-pub struct History {
+pub struct Color {
     pub red: u8,
     pub green: u8,
     pub blue: u8,
@@ -20,26 +20,44 @@ impl MMCQ {
     const SIGNIFICANT_BITS: u8 = 5;
     const bit_shift: u8 = 8 - Self::SIGNIFICANT_BITS;
 
-    pub fn get_history(pixels: &Vec<&Rgba<u8>>) -> History {
-        let mut history = History{
+    pub fn get_history(pixels: &Vec<&Rgba<u8>>) -> Color {
+        let mut color = Color{
             red: 0,
             green: 0,
             blue: 0,
         };
+
+        // let history = HashMap::new();
     
         // Get color index
         // Shift colors based on bit shift
         // Check minimums and maximums
         for px in pixels {
-            history.red = px.0[0];
-            history.green = px.0[1];
-            history.blue = px.0[2];
-            println!("px:{:?}", px);
-            //history.red = px.0.red;
-            //color_bins.insert(RGB::green, px.0.green);
-            //color_bins.insert(RGB::blue, px.0.blue);
+
+            let [red, green, blue, alpha] = px.0;
+
+            let red_shift = &red >> Self::bit_shift;
+            let green_shift = green >> Self::bit_shift;
+            let blue_shift = blue >> Self::bit_shift;
+            println!("Pixels: {:?}", px);
+
+            color.red = red_shift;
+            color.green = green_shift;
+            color.blue = blue_shift;
         }
-        history
+        color
+    }
+
+    fn get_color_index(red: u8, green: u8, blue: u8) {
+        (red << (2 * Self::SIGNIFICANT_BITS) + green << Self::SIGNIFICANT_BITS + blue);
     }
 }
 
+// #[cfg(test)]
+// mod test {
+//     use super::*;
+// 
+//     fn test_get_history() {
+//         MMCQ::get_history();
+//     }
+// }
