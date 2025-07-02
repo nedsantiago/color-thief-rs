@@ -2,7 +2,6 @@
 mod img_io;
 mod color_calc;
 use std::error::Error;
-use std::vec;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -27,9 +26,18 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Calculate colors
-    let history = color_calc::MMCQ::get_frequency_map(&valid_pixels);
-    println!("History: {:?}", history);
-    // println!("(r,g,b): {}, {}, {}", history.red, history.green, history.blue); 
+    let histogram = color_calc::MMCQ::get_frequency_map(&valid_pixels);
+    println!("histogram: {:?}", histogram);
+    
+    let histogram_len: usize = histogram.len();
+    // If colors in histogram aren't enough, run a failure mode
+    if histogram_len as u32 <= max_colors as u32 {
+        // Ask for a different image and exit
+        println!("Image has a small color range. Try another one.");
+        return Ok(());
+    }
+
+    // Calculate the color space
 
     Ok(())
 }
