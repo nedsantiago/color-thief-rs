@@ -122,7 +122,12 @@ enum ColorChannel {
 
 impl std::fmt::Display for ColorSpace {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Text for ColorSpace: r_max:{}", self.r_max)
+        write!(
+            f,
+            "r({},{}), g({},{}), b({},{})",
+            self.r_min, self.r_max, self.g_min, self.g_max,
+            self.b_min, self.b_max,
+        )
     }
 }
 
