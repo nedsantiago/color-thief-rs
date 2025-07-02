@@ -56,19 +56,16 @@ impl MMCQ {
     fn get_colorspace(pixels: &Vec<&Rgba<u8>>, histogram: HashMap<u32,u32>) {
         // NOTE: It seems that get_colorspace should be part
         // of get_frequency_map calculation for better encapsulation
-        let mut colorspace = ColorSpace {
-            r_min: 255,
-            r_max: 0,
-            g_min: 255,
-            g_max: 0,
-            b_min: 255,
-            b_max: 0,
-        };
+        let mut colorspace = ColorSpace::new();
 
         for px in pixels {
             let r = px.0[0] >> Self::BIT_SHIFT;
             let g = px.0[1] >> Self::BIT_SHIFT;
             let b = px.0[2] >> Self::BIT_SHIFT;
+
+            colorspace.update(ColorChannel::Red, r);
+            colorspace.update(ColorChannel::Green, g);
+            colorspace.update(ColorChannel::Blue, b);
         }
     }
 }
@@ -123,6 +120,17 @@ enum ColorChannel {
 }
 
 impl ColorSpace {
+    pub fn new() -> ColorSpace {
+        ColorSpace {
+            r_min: 255,
+            r_max: 0,
+            g_min: 255,
+            g_max: 0,
+            b_min: 255,
+            b_max: 0,
+        }
+    }
+
     pub fn volume(&self) -> u32 {
         (self.r_max - self.r_min) as u32 *
             (self.g_max - self.g_min) as u32 *
