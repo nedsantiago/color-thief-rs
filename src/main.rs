@@ -38,6 +38,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Calculate the color space
+    let colorspace = color_calc::MMCQ::get_colorspace(&valid_pixels, histogram);
+    println!("Colorspace:{}", colorspace);
 
     Ok(())
 }
