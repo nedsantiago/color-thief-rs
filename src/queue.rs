@@ -2,7 +2,7 @@ use std::vec::Vec;
 use std::collections::HashMap;
 
 
-struct Queue<'a> {
+pub struct Queue<'a> {
     sort_key: &'a dyn Fn(HashMap<u32, u32>) -> u32,
     contents: HashMap<u32, u32>,
     sorted: bool,
@@ -20,4 +20,7 @@ impl <'a> Queue<'a> {
         }
     }
     // NOTE Try implementing count by iterating over hash index
+    pub fn count(&self) -> u32 {
+        12
+    }
 }

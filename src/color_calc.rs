@@ -62,7 +62,7 @@ impl MMCQ {
     ///
     pub fn get_colorspace(
         pixels: &Vec<&Rgba<u8>>,
-        histogram: HashMap<u32,u32>) -> ColorSpace {
+        histogram: &HashMap<u32,u32>) -> ColorSpace {
         // NOTE: It seems that get_colorspace should be part
         // of get_frequency_map calculation for better encapsulation
         let mut colorspace: ColorSpace = ColorSpace::new();

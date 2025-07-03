@@ -3,6 +3,7 @@ mod img_io;
 mod color_calc;
 mod queue;
 use std::error::Error;
+use std::collections::HashMap;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -39,11 +40,24 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Calculate the color space
-    let colorspace = color_calc::MMCQ::get_colorspace(&valid_pixels, histogram);
+    let colorspace = color_calc::MMCQ::get_colorspace(&valid_pixels, &histogram);
     println!("Colorspace:{}", colorspace);
 
+    fn get_hashmap_count(h: HashMap<u32, u32>) -> u32 {
+        let mut sum_count: u32 = 0;
+        for count in h.into_values() {
+            sum_count += count;
+        }
+        sum_count
+    }
     // Create a queue for sorting data
-    //count_sorter = queue::Queue::new(|h: HashMap<u32, u32>| -> (u32) {h}, histogram);
+    let count_sorter = queue::Queue::new(
+        &get_hashmap_count,
+        histogram
+    );
+
+    let count = count_sorter.count();
+    println!("Histogram count: {}", count);
 
     Ok(())
 }
