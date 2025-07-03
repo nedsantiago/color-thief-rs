@@ -42,5 +42,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let colorspace = color_calc::MMCQ::get_colorspace(&valid_pixels, histogram);
     println!("Colorspace:{}", colorspace);
 
+    // Create a queue for sorting data
+    //count_sorter = queue::Queue::new(|h: HashMap<u32, u32>| -> (u32) {h}, histogram);
+
     Ok(())
 }
