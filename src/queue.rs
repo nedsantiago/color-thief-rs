@@ -1,4 +1,3 @@
-use std::vec::Vec;
 use std::collections::HashMap;
 
 
@@ -20,7 +19,8 @@ impl <'a> Queue<'a> {
         }
     }
     // NOTE Try implementing count by iterating over hash index
-    pub fn count(&self) -> u32 {
-        12
+    pub fn count(&mut self) -> u32 {
+        self.sorted = true;
+        (self.sort_key)(self.contents.clone())
     }
 }
