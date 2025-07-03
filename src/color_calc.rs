@@ -1,18 +1,11 @@
 use std::collections::HashMap;
 use image::Rgba;
-
 /// Modified Median Cut Quantization (MMCQ) encapsulates all the
 /// functionality and constants for conducting the algorithm.
 /// The algorithm uses binary operations. It removes smaller-
 /// valued bits and leaves the larger-valued bits (i.e. 00001111 becomes
 /// 00001 taking away the right-most bits) to build its palette with.
 /// Defaults to 5 significant bits.
-///
-/// # Examples
-/// ```rust
-/// let result = color_calc::MMCQ::get_color_hash(15, 12, 10)
-/// assert_eq!(result, 15754);
-/// ```
 pub struct MMCQ {}
 
 impl MMCQ {
@@ -20,6 +13,7 @@ impl MMCQ {
     const SIGNIFICANT_BITS: u8 = 5;
     const BIT_SHIFT: u8 = 8 - Self::SIGNIFICANT_BITS;
 
+    /// 
     pub fn get_frequency_map(pixels: &Vec<&Rgba<u8>>) -> HashMap<u32, u32> {
         let mut history: HashMap<u32, u32> = HashMap::new();
     
@@ -46,6 +40,16 @@ impl MMCQ {
         history
     }
 
+    /// Creates an ID / index number / hash for each binned color
+    /// combination, particularly important when implementing HashMap.
+    /// The method takes RGB values and returns an unsigned integer
+    /// representing the ID. Uses bit shifting to create unique ID's
+    ///
+    /// # Examples
+    /// ```rust
+    /// let result = color_calc::MMCQ::get_color_hash(15, 12, 10)
+    /// assert_eq!(result, 15754);
+    /// ```
     fn get_color_hash(r: u8, g: u8, b: u8) -> u32 {
         let r_lshift: u32 = (r as u32) << 2 * Self::SIGNIFICANT_BITS;
         let g_lshift: u32 = (g as u32) << Self::SIGNIFICANT_BITS;
@@ -53,7 +57,12 @@ impl MMCQ {
         r_lshift + g_lshift + b_lshift
     }
 
-    pub fn get_colorspace(pixels: &Vec<&Rgba<u8>>, histogram: HashMap<u32,u32>) -> ColorSpace {
+    /// Calculates the RGB value range and a frequency map for a
+    /// condensed color characteristics summary
+    ///
+    pub fn get_colorspace(
+        pixels: &Vec<&Rgba<u8>>,
+        histogram: HashMap<u32,u32>) -> ColorSpace {
         // NOTE: It seems that get_colorspace should be part
         // of get_frequency_map calculation for better encapsulation
         let mut colorspace: ColorSpace = ColorSpace::new();
@@ -125,7 +134,8 @@ impl std::fmt::Display for ColorSpace {
         write!(
             f,
             "r({},{}), g({},{}), b({},{})",
-            self.r_min, self.r_max, self.g_min, self.g_max,
+            self.r_min, self.r_max,
+            self.g_min, self.g_max,
             self.b_min, self.b_max,
         )
     }

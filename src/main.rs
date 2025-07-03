@@ -1,6 +1,7 @@
 //mod data_models;
 mod img_io;
 mod color_calc;
+mod queue;
 use std::error::Error;
 
 
