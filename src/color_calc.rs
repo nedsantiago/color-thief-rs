@@ -65,7 +65,7 @@ impl MMCQ {
         histogram: &HashMap<u32,u32>) -> ColorSpace {
         // NOTE: It seems that get_colorspace should be part
         // of get_frequency_map calculation for better encapsulation
-        let mut colorspace: ColorSpace = ColorSpace::new();
+        let mut colorspace: ColorSpace = ColorSpace::new(histogram.clone());
 
         for px in pixels {
             let r = px.0[0] >> Self::BIT_SHIFT;
@@ -120,7 +120,7 @@ pub struct ColorSpace {
     pub g_max: u8,
     pub b_min: u8,
     pub b_max: u8,
-    // History goes here
+    pub frequency_map: HashMap<u32, u32>,
 }
 
 enum ColorChannel {
@@ -142,7 +142,7 @@ impl std::fmt::Display for ColorSpace {
 }
 
 impl ColorSpace {
-    pub fn new() -> ColorSpace {
+    pub fn new(histo: HashMap<u32,u32>) -> ColorSpace {
         ColorSpace {
             r_min: 255,
             r_max: 0,
@@ -150,6 +150,7 @@ impl ColorSpace {
             g_max: 0,
             b_min: 255,
             b_max: 0,
+            frequency_map: histo,
         }
     }
 
@@ -157,6 +158,14 @@ impl ColorSpace {
         (self.r_max - self.r_min) as u32 *
             (self.g_max - self.g_min) as u32 *
             (self.b_max - self.b_min) as u32
+    }
+
+    pub fn count(&self) -> u32 {
+        let mut sum_count: u32 = 0;
+        for count in self.frequency_map.clone().into_values() {
+            sum_count += count;
+        }
+        sum_count
     }
     
     fn update(&mut self, color_channel: ColorChannel, value: u8) -> () {
@@ -183,5 +192,26 @@ impl ColorSpace {
                 }
             }
         }
+    }
+}
+
+
+#[cfg(test)]
+mod test_ColorSpace {
+    use super::*;
+
+    fn test_count(){
+        let hashmap = HashMap::from(
+            (26380, 11), (1057, 1), (0, 1),
+            (25166, 10), (20041, 206), (22122, 2813),
+            (21958, 28), (10530, 48), (14693, 24),
+            (32767, 1)
+        );
+        let queue = Queue::new(hashmap,);
+        // let expected = ;
+        // assert_eq!(resulted, expected, "\nEXPECTED\n{}\nRESULTED\n{}", expected, resulted);
+        // histo = {26380: 11, 1057: 1, 0: 1, 25166: 10, 20041: 206, 22122: 2813, 21958: 28, 10530: 48, 14693: 24, 32767:1}
+        // vbox = colorthief.VBox(0,31,0,31,0,31, histo)
+        // assert vbox.count == 3143
     }
 }

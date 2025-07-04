@@ -24,3 +24,10 @@ impl <'a> Queue<'a> {
         (self.sort_key)(self.contents.clone())
     }
 }
+
+
+#[cfg(test)]
+mod test_Queue {
+    use super::*;
+    }
+
