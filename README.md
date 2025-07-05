@@ -12,6 +12,7 @@ Primarily, to improve in writing Rust as project-based learning. Color Thief is 
 - Considering a better data model for pixels. It would be best to pass and calculate pixels as a set or vector instead of repeating operations thrice at different parts of the algorithm.
 - Will need to unify the naming and terminology used for : `ColorSpace` / `VolumeBox` / `ColorBox` / `Color3D`, `MMCQ`, `Rgba`, `hash` / `id` / `index` / `hashed_color`, etc.
 - In `color-thief-py`, `VBox.count()` can be optimized I by looping through the dictionary instead of the entire color space.
+- Current architecture can be improved. Exploring algorithms that can encapsulate the creation of the `ColorSpace` / `VBox` structs. Suspect that the `histo`-generating function and the `ColorSpace` algorithm should be used in a single function. Perhaps `color_calc` can be composed of functions declared somewhere else. Especially important since a frequency calculator seems like a valuable algorithm to have for future projects.
 
 ## Possible tests
 
@@ -32,4 +33,4 @@ The library follows a 7-stage data pipeline.
 4. **Median Split Color Summary by frequency**: sort hash colors by their count and median split based on the accumulated count (true median: split by count)
 5. **Median Split Color Summary by volume-count**: sort by `volume * count` and median split
 6. **Calculate average color of each Color Summary**: Gather the average color for each Color Summary
-7. **Create a color palette**: Create a list of colors based on the average colors selection here.
+7. **Create a color palette**: Create a list of colors based on the average colors selection here
