@@ -1,10 +1,6 @@
 # Color Thief (Rust)
 
-A rewrite of the color thief library in Rust. The library builds a color palette in-theme with a provided image. This library is a Rust port of Shipeng Feng's [Color Thief](https://github.com/fengsp/color-thief-py)
-
-## Motivation
-
-Primarily, to improve in writing Rust as project-based learning. Color Thief is a library that `wal` was built from.
+A Rust rewrite of `color-thief-py`. Color Thief generates a color palette using the colors in a provided image. This repository is a Rust port of Shipeng Feng's [Color Thief](https://github.com/fengsp/color-thief-py)
 
 ## Notes
 

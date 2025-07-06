@@ -50,6 +50,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         sum_count
     }
+
     // Create a queue for sorting data
     let mut count_sorter = queue::Queue::new(
         &get_hashmap_count,
