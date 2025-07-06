@@ -1,4 +1,3 @@
-//mod data_models;
 mod img_io;
 mod color_calc;
 mod queue;
