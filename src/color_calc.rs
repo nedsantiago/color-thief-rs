@@ -13,7 +13,6 @@ impl MMCQ {
     const SIGNIFICANT_BITS: u8 = 5;
     const BIT_SHIFT: u8 = 8 - Self::SIGNIFICANT_BITS;
 
-    /// 
     pub fn get_frequency_map(pixels: &Vec<&Rgba<u8>>) -> HashMap<u32, u32> {
         let mut history: HashMap<u32, u32> = HashMap::new();
     

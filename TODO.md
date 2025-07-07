@@ -1,8 +1,7 @@
 ## Notes
 
 - Considering a separating of ColorSpaces from MMCQ. `ColorSpace` should be the data model holding information but not changing it. `MMCQ` is the calculating engine binning and categorizing the colors. Separating these concerns should improve testing through modularity.
-- Considering a better data model for pixels. It would be best to pass and calculate pixels as a set or vector instead of repeating operations thrice at different parts of the algorithm.
-- Will need to unify the naming and terminology used for : `ColorSpace` / `VolumeBox` / `ColorBox` / `Color3D`, `MMCQ`, `Rgba`, `hash` / `id` / `index` / `hashed_color`, etc.
+- Considering a better data model for pixels. It would be best to pass and calculate pixels as a set or vector instead of repeating operations thrice at different parts of the algorithm. Will need to unify the naming and terminology used for : `ColorSpace` / `VolumeBox` / `ColorBox` / `Color3D`, `MMCQ`, `Rgba`, `hash` / `id` / `index` / `hashed_color`, etc.
 - In `color-thief-py`, `VBox.count()` can be optimized I by looping through the dictionary instead of the entire color space.
 - Current architecture can be improved. Exploring algorithms that can encapsulate the creation of the `ColorSpace` / `VBox` structs. Suspect that the `histo`-generating function and the `ColorSpace` algorithm should be used in a single function. Perhaps `color_calc` can be composed of functions declared somewhere else. Especially important since a frequency calculator seems like a valuable algorithm to have for future projects.
 - Create a png without data for testing, there may be a weird case where the while loop may go on until max iteration. In `color-thief-py` line 241, it seems to do nothing when the vbox count is 0 then increments `n_iter` and continues the while loop until max iteration. I think think the program should cite this as a failure mode.
@@ -27,3 +26,22 @@ The library follows a 7-stage data pipeline.
 5. **Median Split Color Summary by volume-count**: sort by `volume * count` and median split
 6. **Calculate average color of each Color Summary**: Gather the average color for each Color Summary
 7. **Create a color palette**: Create a list of colors based on the average colors selection here
+
+**Modified Median Cut Quantization (MMCQ) Algorithm Explanation**
+
+1. **Create a 3D Color Space** - Each dimension represents one color channel (red, green, blue), i.e. represent colors as a 3D coordinate system.
+2. **Color Histogram** - Bin the bits by the first 5 significant bits, then count the number of pixels in each binned color. In other words, reduce the number of colors by collecting them using their binary place numbers.
+3. **Initial ColorSpace** - Encompasses all colors in histogram.
+4. **Iterative Splitting** - Select largest box by count, find longest dimension, find median along dimension, split box at the median
+5. **Two-phase Splitting** - Split by pixel `count` until 75% target colors, then split based on `count * volume`.
+6. **Map Colors** - based on the average color per box
+7. **Find nearest color** - Colors not in palette can try to find the nearest.
+
+**Need to Implement**
+- 3D box
+- Color Map (hash table)
+- Priority Queue (or sorting algorithm)
+- Histogram
+- Initial 3D Box builder
+- Median Cut Algorithm
+- Orchestration function
