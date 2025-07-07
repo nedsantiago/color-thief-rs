@@ -33,17 +33,8 @@ flowchart TD;
     H --> I;
     I --> |Two-phase Splitting| J[Vector of Colorspaces];
     J --> |Average Color| K[Color Map];
-    K --> |Nearest COlor| L[Color Palette];
+    K --> |Nearest Color| L[Color Palette];
     L --> M[End];
-```
-### Basic Flowchart
-```mermaid
-graph TB
-    A[Start] ==> B{Is it?};
-    B -->|Yes| C[OK];
-    C --> D[Rethink];
-    D -.-> B;
-    B ---->|No| E[End];
 ```
 
 1. **Image to Pixel**: Given a directory to an image, the Color Thief will read its data and create an iterable pixels in rgba format.
