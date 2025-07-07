@@ -19,6 +19,33 @@ assert vbox.count == 3143
 
 The library follows a 7-stage data pipeline.
 
+### Flowchart
+```mermaid
+flowchart TD;
+    A[Start] --> B[Image (path or file)];
+    B --> C{Is valid?};
+    C --> |No| D[Exit with error];
+    C --> |Yes, convert| E[RGBA Pixels];
+    E --> |Filter pixles| F[RGB Pixels];
+    F --> |Bin + min & max| G[ColorSpace];
+    F --> |Frequency Analysis| H[Histogram];
+    G --> |Iterative Splitting| I[Vector of Colorspaces];
+    H --> I;
+    I --> |Two-phase Splitting| J[Vector of Colorspaces];
+    J --> |Average Color| K[Color Map];
+    K --> |Nearest COlor| L[Color Palette];
+    L --> M[End];
+```
+### Basic Flowchart
+```mermaid
+graph TB
+    A[Start] ==> B{Is it?};
+    B -->|Yes| C[OK];
+    C --> D[Rethink];
+    D -.-> B;
+    B ---->|No| E[End];
+```
+
 1. **Image to Pixel**: Given a directory to an image, the Color Thief will read its data and create an iterable pixels in rgba format.
 2. **Pixel Validity Filter**: Invalid pixels will be filtered out of the data.
 3. **Pixels to Color Summary**: Bin the pixels and record the minimum and maximum values of each rgb pixel
