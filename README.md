@@ -10,4 +10,5 @@ A Rust rewrite of `color-thief-py`. Color Thief generates a color palette based 
 ### References
 
 Feng, S. (2017, February 9). *color-thief-py*. Github. [https://github.com/fengsp/color-thief-py](https://github.com/fengsp/color-thief-py)
+
 Dhakar, L. (2025, October 5). *quantize*. Github. [https://github.com/lokesh/quantize](https://github.com/lokesh/quantize)
