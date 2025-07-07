@@ -208,12 +208,12 @@ mod test_ColorSpace {
     use super::*;
 
     fn test_count(){
-        let hashmap = HashMap::from(
+        let hashmap = HashMap::from([
             (26380, 11), (1057, 1), (0, 1),
             (25166, 10), (20041, 206), (22122, 2813),
             (21958, 28), (10530, 48), (14693, 24),
             (32767, 1)
-        );
+        ]);
         let queue = Queue::new(hashmap,);
         // let expected = ;
         // assert_eq!(resulted, expected, "\nEXPECTED\n{}\nRESULTED\n{}", expected, resulted);
