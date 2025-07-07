@@ -22,7 +22,7 @@ The library follows a 7-stage data pipeline.
 ### Flowchart
 ```mermaid
 flowchart TD;
-    A[Start] --> B[Image (path or file)];
+    A[Start] --> B[Image];
     B --> C{Is valid?};
     C --> |No| D[Exit with error];
     C --> |Yes, convert| E[RGBA Pixels];
