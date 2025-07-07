@@ -5,6 +5,7 @@
 - Will need to unify the naming and terminology used for : `ColorSpace` / `VolumeBox` / `ColorBox` / `Color3D`, `MMCQ`, `Rgba`, `hash` / `id` / `index` / `hashed_color`, etc.
 - In `color-thief-py`, `VBox.count()` can be optimized I by looping through the dictionary instead of the entire color space.
 - Current architecture can be improved. Exploring algorithms that can encapsulate the creation of the `ColorSpace` / `VBox` structs. Suspect that the `histo`-generating function and the `ColorSpace` algorithm should be used in a single function. Perhaps `color_calc` can be composed of functions declared somewhere else. Especially important since a frequency calculator seems like a valuable algorithm to have for future projects.
+- Create a png without data for testing, there may be a weird case where the while loop may go on until max iteration. In `color-thief-py` line 241, it seems to do nothing when the vbox count is 0 then increments `n_iter` and continues the while loop until max iteration. I think think the program should cite this as a failure mode.
 
 ## Possible tests
 
