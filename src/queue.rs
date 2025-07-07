@@ -25,7 +25,6 @@ impl <'a> Queue<'a> {
     }
 }
 
-
 #[cfg(test)]
 mod test_Queue {
     use super::*;

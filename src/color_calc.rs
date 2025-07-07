@@ -78,11 +78,33 @@ impl MMCQ {
         colorspace
     }
 
-    pub fn median_cut_apply(colorspace: ColorSpace) -> () {
+    /// Median Cut Apply
+    /// Given a 3D Colorspace / box, splits the Colorspace perpendicular to
+    /// one color dimension. The split will either be based on median (frequency/count)
+    /// or volume * count
+    pub fn median_cut_apply(colorspace: ColorSpace, histogram: &HashMap<u32, u32>) -> () {
+
+        // Get Largest ColorSpace
         let r_range: u8 = colorspace.r_max - colorspace.r_min;
         let g_range: u8 = colorspace.g_max - colorspace.g_min;
         let b_range: u8 = colorspace.b_max - colorspace.b_min;
         println!("r_range:{}, g_range:{}, b_range:{}", r_range, g_range, b_range);
+        // Check for largest range if-else statements are efficient
+        if (r_range >= g_range) && (r_range >= b_range) {
+            // Find median by looping through range and getting cumulative
+            let mut count = 0;
+            for i in 0..(r_range + 1) {
+                println!("i:{}", i);
+            }
+            // Using sorting heuristic (population in this case)
+            // Split into two color spaces
+        } else if (g_range > r_range) && (g_range > b_range) {
+            // Find median by looping through range
+        } else {
+            // Find median by looping through range and getting cumulative
+            // Using sorting heuristic (population in this case)
+            // Split into two color spaces
+        }
     }
 }
 

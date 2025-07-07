@@ -53,13 +53,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Create a queue for sorting data
     let mut count_sorter = queue::Queue::new(
         &get_hashmap_count,
-        histogram
+        histogram.clone()   // cloned since lifetime will stop histogram usage
     );
 
     let count = count_sorter.count();
     println!("Histogram count: {}", count);
 
-    color_calc::MMCQ::median_cut_apply(colorspace);
+    color_calc::MMCQ::median_cut_apply(colorspace, &histogram);
 
     Ok(())
 }
