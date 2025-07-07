@@ -27,7 +27,3 @@ The library follows a 7-stage data pipeline.
 5. **Median Split Color Summary by volume-count**: sort by `volume * count` and median split
 6. **Calculate average color of each Color Summary**: Gather the average color for each Color Summary
 7. **Create a color palette**: Create a list of colors based on the average colors selection here
-
-## References
-
-lokesh. (2024 October 5). *quantize*. Github. [https://github.com/lokesh/quantize](https://github.com/lokesh/quantize)
