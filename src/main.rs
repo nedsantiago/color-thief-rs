@@ -43,11 +43,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Colorspace:{}", colorspace);
 
     fn get_hashmap_count(h: HashMap<u32, u32>) -> u32 {
-        let mut sum_count: u32 = 0;
+        let mut total_count: u32 = 0;
         for count in h.into_values() {
-            sum_count += count;
+            total_count += count;
         }
-        sum_count
+        total_count
     }
 
     // Create a queue for sorting data
@@ -58,6 +58,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let count = count_sorter.count();
     println!("Histogram count: {}", count);
+
+    color_calc::MMCQ::median_cut_apply(colorspace);
 
     Ok(())
 }

@@ -78,6 +78,13 @@ impl MMCQ {
         }
         colorspace
     }
+
+    pub fn median_cut_apply(colorspace: ColorSpace) -> () {
+        let r_range: u8 = colorspace.r_max - colorspace.r_min;
+        let g_range: u8 = colorspace.g_max - colorspace.g_min;
+        let b_range: u8 = colorspace.b_max - colorspace.b_min;
+        println!("r_range:{}, g_range:{}, b_range:{}", r_range, g_range, b_range);
+    }
 }
 
 #[cfg(test)]
