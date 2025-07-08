@@ -161,6 +161,12 @@ impl MMCQ {
         match color_channel {
             ColorChannel::Red => {
                 println!("Splitting along Red!");
+                // Find Median
+                // Adjust Median based on sizes
+                // median should increase into larger box
+                // max value - 1, median + right / 2
+                // Adjust Median based on cumulative sum validity
+                // move median to larger box when no value
                 let mut i: u8 = colorspace.r_min;
                 let mut median_found: bool = false;
                 while !median_found && i <= colorspace.r_max {
@@ -170,9 +176,6 @@ impl MMCQ {
                     if csum > midpopulation {
                         median_found = true;
                         println!("Found the median at {}", i);
-                        let leftbox = colorspace.clone();
-                        let rightbox = colorspace.clone();
-
                         let left = i - colorspace.r_min;
                         let right = colorspace.r_max - i;
 
@@ -191,6 +194,8 @@ impl MMCQ {
                             }
                         }
                         println!("adj_median:{}", adj_median);
+
+                        // Walk the adj_median left or right if not on valid value
                     }
                     i += 1;
                 }
