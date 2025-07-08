@@ -28,7 +28,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Calculate colors
     let histogram = color_calc::MMCQ::get_frequency_map(&valid_pixels);
-    // println!("histogram: {:?}", histogram);
     
     let histogram_len: usize = histogram.len();
     // If colors in histogram aren't enough, run a failure mode

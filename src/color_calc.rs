@@ -93,6 +93,7 @@ impl MMCQ {
         // Check for largest range if-else statements are efficient
         let mut total = 0;
         let mut cumulative_sum: Vec<u32> = Vec::new();
+        let mut color_channel: ColorChannel = ColorChannel::Red;
         if (r_range >= g_range) && (r_range >= b_range) {
             // Create a cumulative histogram
             for i in colorspace.r_min..(colorspace.r_max + 1) {
@@ -111,6 +112,7 @@ impl MMCQ {
             }
             // println!("cumulative_sum={:?}", cumulative_sum);
         } else if (g_range > r_range) && (g_range > b_range) {
+            color_channel = ColorChannel::Green;
             // Create a cumulative histogram
             let mut total = 0;
             let mut cumulative_sum: Vec<u32> = Vec::new();
@@ -128,6 +130,7 @@ impl MMCQ {
                 cumulative_sum.push(total);
             }
         } else {
+            color_channel = ColorChannel::Blue;
             // Create a cumulative histogram
             for i in colorspace.b_min..(colorspace.b_max + 1) {
                 let mut sum = 0;
@@ -151,6 +154,54 @@ impl MMCQ {
         }
         println!("Result: {:?}", inverse_cumulative);
 
+        fn split_colorspace(colorspace: ColorSpace) {
+            
+        }
+
+        match color_channel {
+            ColorChannel::Red => {
+                println!("Splitting along Red!");
+                let mut i: u8 = colorspace.r_min;
+                let mut median_found: bool = false;
+                while !median_found && i <= colorspace.r_max {
+                    let csum: u32 = cumulative_sum[i as usize];
+                    let midpopulation: u32 = total / 2;
+                    println!("Is {} > {}", csum, midpopulation);
+                    if csum > midpopulation {
+                        median_found = true;
+                        println!("Found the median at {}", i);
+                        let leftbox = colorspace.clone();
+                        let rightbox = colorspace.clone();
+
+                        let left = i - colorspace.r_min;
+                        let right = colorspace.r_max - i;
+
+                        let mut adj_median: u8 = 0;
+                        if left <= right {
+                            if (colorspace.r_max - 1) <= (i + right / 2) {
+                                adj_median = colorspace.r_max - 1;
+                            } else {
+                                adj_median = i + right / 2;
+                            }
+                        } else {
+                            if (colorspace.r_min - 1) >= (i + right / 2) {
+                                adj_median = colorspace.r_max - 1;
+                            } else {
+                                adj_median = i + right / 2;
+                            }
+                        }
+                        println!("adj_median:{}", adj_median);
+                    }
+                    i += 1;
+                }
+            }
+            ColorChannel::Green => {
+                println!("Splitting along Green!");
+            }
+            ColorChannel::Blue => {
+                println!("Splitting along Blue!");
+            }
+        }
         // Split
         // case match color channel
         // traverse color_channel
@@ -278,6 +329,19 @@ impl ColorSpace {
                 }
             }
         }
+    }
+
+    fn clone(&self) -> ColorSpace {
+        ColorSpace {
+            r_min: self.r_min,
+            r_max: self.r_max,
+            g_min: self.g_min,
+            g_max: self.g_max,
+            b_min: self.b_min,
+            b_max: self.b_max,
+            frequency_map: self.frequency_map.clone(),
+        }
+
     }
 }
 
