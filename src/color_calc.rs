@@ -91,10 +91,9 @@ impl MMCQ {
         let b_range: u8 = colorspace.b_max - colorspace.b_min;
         println!("r_range:{}, g_range:{}, b_range:{}", r_range, g_range, b_range);
         // Check for largest range if-else statements are efficient
+        let mut total = 0;
+        let mut cumulative_sum: Vec<u32> = Vec::new();
         if (r_range >= g_range) && (r_range >= b_range) {
-            // Find median by looping through range and getting cumulative
-            let mut total = 0;
-            let mut cumulative_sum: Vec<u32> = Vec::new();
             // Create a cumulative histogram
             for i in colorspace.r_min..(colorspace.r_max + 1) {
                 let mut sum = 0;
@@ -108,11 +107,9 @@ impl MMCQ {
                 }
                 total += sum;
                 cumulative_sum.push(total);
-                println!("total={}, sum={}", total, sum);
+                // println!("total={}, sum={}", total, sum);
             }
-            println!("cumulative_sum={:?}", cumulative_sum);
-            // Using sorting heuristic (population in this case)
-            // Split into two color spaces
+            // println!("cumulative_sum={:?}", cumulative_sum);
         } else if (g_range > r_range) && (g_range > b_range) {
             // Create a cumulative histogram
             let mut total = 0;
@@ -132,8 +129,6 @@ impl MMCQ {
             }
         } else {
             // Create a cumulative histogram
-            let mut total = 0;
-            let mut cumulative_sum: Vec<u32> = Vec::new();
             for i in colorspace.b_min..(colorspace.b_max + 1) {
                 let mut sum = 0;
                 for j in colorspace.r_min..(colorspace.r_max + 1) {
@@ -148,6 +143,15 @@ impl MMCQ {
                 cumulative_sum.push(total);
             }
         }
+        let mut inverse_cumulative: Vec<u32> = Vec::new();
+        // Inverse the data
+        println!("Beginning iteration through cumulative sum");
+        for step in cumulative_sum.iter() {
+            inverse_cumulative.push(total - step)
+        }
+        println!("Result: {:?}", inverse_cumulative);
+        // Using sorting heuristic (population in this case)
+        // Split into two color spaces
     }
 }
 
