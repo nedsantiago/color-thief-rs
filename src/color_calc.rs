@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::vec::Vec;
 use image::Rgba;
 /// Modified Median Cut Quantization (MMCQ) encapsulates all the
 /// functionality and constants for conducting the algorithm.
@@ -92,18 +93,60 @@ impl MMCQ {
         // Check for largest range if-else statements are efficient
         if (r_range >= g_range) && (r_range >= b_range) {
             // Find median by looping through range and getting cumulative
-            let mut count = 0;
-            for i in 0..(r_range + 1) {
-                println!("i:{}", i);
+            let mut total = 0;
+            let mut cumulative_sum: Vec<u32> = Vec::new();
+            // Create a cumulative histogram
+            for i in colorspace.r_min..(colorspace.r_max + 1) {
+                let mut sum = 0;
+                for j in colorspace.g_min..(colorspace.g_max + 1) {
+                    for k in colorspace.b_min..(colorspace.b_max + 1) {
+                        let hash = MMCQ::get_color_hash(i, j, k);
+                        if histogram.contains_key(&hash) {
+                            sum += histogram[&hash];
+                        }
+                    }
+                }
+                total += sum;
+                cumulative_sum.push(total);
+                println!("total={}, sum={}", total, sum);
             }
+            println!("cumulative_sum={:?}", cumulative_sum);
             // Using sorting heuristic (population in this case)
             // Split into two color spaces
         } else if (g_range > r_range) && (g_range > b_range) {
-            // Find median by looping through range
+            // Create a cumulative histogram
+            let mut total = 0;
+            let mut cumulative_sum: Vec<u32> = Vec::new();
+            for i in colorspace.g_min..(colorspace.g_max + 1) {
+                let mut sum = 0;
+                for j in colorspace.r_min..(colorspace.r_max + 1) {
+                    for k in colorspace.b_min..(colorspace.b_max + 1) {
+                        let hash = MMCQ::get_color_hash(i, j, k);
+                        if histogram.contains_key(&hash) {
+                            sum += histogram[&hash];
+                        }
+                    }
+                }
+                total += sum;
+                cumulative_sum.push(total);
+            }
         } else {
-            // Find median by looping through range and getting cumulative
-            // Using sorting heuristic (population in this case)
-            // Split into two color spaces
+            // Create a cumulative histogram
+            let mut total = 0;
+            let mut cumulative_sum: Vec<u32> = Vec::new();
+            for i in colorspace.b_min..(colorspace.b_max + 1) {
+                let mut sum = 0;
+                for j in colorspace.r_min..(colorspace.r_max + 1) {
+                    for k in colorspace.g_min..(colorspace.g_max + 1) {
+                        let hash = MMCQ::get_color_hash(i, j, k);
+                        if histogram.contains_key(&hash) {
+                            sum += histogram[&hash];
+                        }
+                    }
+                }
+                total += sum;
+                cumulative_sum.push(total);
+            }
         }
     }
 }
