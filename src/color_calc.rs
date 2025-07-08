@@ -150,7 +150,18 @@ impl MMCQ {
             inverse_cumulative.push(total - step)
         }
         println!("Result: {:?}", inverse_cumulative);
+
+        // Split
+        // case match color channel
+        // traverse color_channel
+        // If inverse cumulative sum is lower than half of total, then median found
+        //  at that median, make copies of the current colorspace as left and right boxes
+        // Then check distance which is larger from min to median and max to median
+        // Do corrections based on which is larger (don't allow zero count color spaces)
+        // Create boxes based on the new dimensions
+        // Return a tuple
         // Using sorting heuristic (population in this case)
+        
         // Split into two color spaces
     }
 }
