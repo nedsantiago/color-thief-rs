@@ -171,7 +171,7 @@ impl MMCQ {
                 while !median_found && i <= colorspace.r_max {
                     let current_sum: u32 = cumulative_sum[i as usize];
                     let midpopulation: u32 = total / 2;
-                    println!("Checking currentsum vs mid {} > {}", current_sum, midpopulation);
+                    println!("current_sum: {} > midpop: {}", current_sum, midpopulation);
                     if current_sum > midpopulation {
                         median_found = true;
                         println!("Found the median at {}", i);
@@ -187,21 +187,25 @@ impl MMCQ {
 
                 // max value - 1, median + right / 2
                 if left <= right {
-                    if (colorspace.r_max - 1) <= (i + right / 2) {
+                    // NOTE test for bugs about using `<` or `<=` here
+                    if (colorspace.r_max - 1) <= (median + right / 2) {
                         median = colorspace.r_max - 1;
                     } else {
-                        median = i + right / 2;
+                        median = median + right / 2;
                     }
                 } else {
-                    if (colorspace.r_min - 1) >= (i + right / 2) {
+                    if (colorspace.r_min - 1) >= (median + right / 2) {
                         median = colorspace.r_max - 1;
                     } else {
-                        median = i + right / 2;
+                        median = median + right / 2;
                     }
                 }
 
+                println!("Median is now at {}", median);
+
                 // Median must be on a valid value while not being at last value
-                // First, 
+                // First, move up when median not in valid value
+                // Second, move down when current median is total
             }
             ColorChannel::Green => {
                 println!("Splitting along Green!");
