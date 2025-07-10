@@ -162,7 +162,7 @@ impl MMCQ {
             ColorChannel::Red => {
                 // Find Median
                 // Initialize median as minimum value
-                let mut rough_median: u8 = colorspace.r_min;
+                let mut median: u8 = colorspace.r_min;
                 // Starting at minimum and moving up to maximum
                 // NOTE failure of no median is found after iteration
                 // NOTE make this a return function get_rough_median
@@ -171,35 +171,37 @@ impl MMCQ {
                 while !median_found && i <= colorspace.r_max {
                     let current_sum: u32 = cumulative_sum[i as usize];
                     let midpopulation: u32 = total / 2;
-                    println!("Is {} > {}", current_sum, midpopulation);
+                    println!("Checking currentsum vs mid {} > {}", current_sum, midpopulation);
                     if current_sum > midpopulation {
                         median_found = true;
                         println!("Found the median at {}", i);
-                        rough_median = i;
-                    i += 1;
+                        median = i;
                     }
+                    i += 1;
                 }
                 // NOTE Make into separate function get_valid_median
                 // Adjust Median based on sizes
                 // median should increase into larger box
-                let left = rough_median - colorspace.r_min;
-                let right = colorspace.r_max - rough_median;
-                let mut adj_median: u8 = 0;
+                let left = median - colorspace.r_min;
+                let right = colorspace.r_max - median;
+
                 // max value - 1, median + right / 2
                 if left <= right {
                     if (colorspace.r_max - 1) <= (i + right / 2) {
-                        adj_median = colorspace.r_max - 1;
+                        median = colorspace.r_max - 1;
                     } else {
-                        adj_median = i + right / 2;
+                        median = i + right / 2;
                     }
                 } else {
                     if (colorspace.r_min - 1) >= (i + right / 2) {
-                        adj_median = colorspace.r_max - 1;
+                        median = colorspace.r_max - 1;
                     } else {
-                        adj_median = i + right / 2;
+                        median = i + right / 2;
                     }
                 }
-                println!("adj_median:{}", adj_median);
+
+                // Median must be on a valid value while not being at last value
+                // First, 
             }
             ColorChannel::Green => {
                 println!("Splitting along Green!");
