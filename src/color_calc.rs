@@ -201,11 +201,19 @@ impl MMCQ {
                     }
                 }
 
-                println!("Median is now at {}", median);
-
+                println!("After first adjustment, median: {}", median);
                 // Median must be on a valid value while not being at last value
                 // First, move up when median not in valid value
+                println!("Cumulative sum at curr median: {}", cumulative_sum[median as usize]);
+                while cumulative_sum[median as usize] == 0 {
+                    median += 1;
+                }
+                println!("After moving up on zero {}", median);
                 // Second, move down when current median is total
+                while inverse_cumulative[median as usize] == 0 && cumulative_sum[median as usize] > 0 {
+                    median -= 1;
+                }
+                println!("After moving down on total {}", median);
             }
             ColorChannel::Green => {
                 println!("Splitting along Green!");
