@@ -76,16 +76,19 @@ classDiagram
 Rgba
 Rgba : [T; 4] 0
 MinMaxBox
-MinmaxBox : u8 rmin
-MinmaxBox : u8 rmax
-MinmaxBox : u8 gmin
-MinmaxBox : u8 gmax
-MinmaxBox : u8 bmin
-MinmaxBox : u8 bmax
+MinMaxBox : u8 rmin
+MinMaxBox : u8 rmax
+MinMaxBox : u8 gmin
+MinMaxBox : u8 gmax
+MinMaxBox : u8 bmin
+MinMaxBox : u8 bmax
 FrequencyMap
 FrequencyMap: HashMap<u32, u32>
 Histogram
 Histogram : vec<u32>
 BoxQueue
 BoxQueue : vec<MinMaxBox>
+ColorPalette: vec<Rgba>
+BoxQueue --> MinMaxBox: uses
+Histogram --> FrequencyMap: refers to
 ```
