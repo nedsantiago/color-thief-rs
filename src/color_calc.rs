@@ -154,15 +154,11 @@ impl MMCQ {
         }
         println!("Result: {:?}", inverse_cumulative);
 
-        fn split_colorspace(colorspace: ColorSpace) {
-            
-        }
-
+        let mut median: u8 = colorspace.r_min;
         match color_channel {
             ColorChannel::Red => {
                 // Find Median
                 // Initialize median as minimum value
-                let mut median: u8 = colorspace.r_min;
                 // Starting at minimum and moving up to maximum
                 // NOTE failure of no median is found after iteration
                 // NOTE make this a return function get_rough_median
@@ -223,6 +219,84 @@ impl MMCQ {
             }
         }
         // Split
+        println!("New median: {}", median);
+
+        fn split_colorspace(colorspace: &ColorSpace, color_channel: ColorChannel, split_line: u8) -> (ColorSpace, ColorSpace) {
+            match color_channel {
+                ColorChannel::Red => {
+                    let left_colorspace = ColorSpace {
+                        r_min: colorspace.r_min,
+                        r_max: split_line,
+                        g_min: colorspace.g_min,
+                        g_max: colorspace.g_max,
+                        b_min: colorspace.b_min,
+                        b_max: colorspace.b_max,
+                        frequency_map: colorspace.frequency_map.clone(),
+                    };
+                    let right_colorspace = ColorSpace {
+                        r_min: split_line,
+                        r_max: colorspace.r_max,
+                        g_min: colorspace.g_min,
+                        g_max: colorspace.g_max,
+                        b_min: colorspace.b_min,
+                        b_max: colorspace.b_max,
+                        frequency_map: colorspace.frequency_map.clone(),
+                    };
+                    return (left_colorspace, right_colorspace)
+                }
+                ColorChannel::Green => {
+                    let left_colorspace = ColorSpace {
+                        r_min: colorspace.r_min,
+                        r_max: split_line,
+                        g_min: colorspace.g_min,
+                        g_max: colorspace.g_max,
+                        b_min: colorspace.b_min,
+                        b_max: colorspace.b_max,
+                        frequency_map: colorspace.frequency_map.clone(),
+                    };
+                    let right_colorspace = ColorSpace {
+                        r_min: split_line,
+                        r_max: colorspace.r_max,
+                        g_min: colorspace.g_min,
+                        g_max: colorspace.g_max,
+                        b_min: colorspace.b_min,
+                        b_max: colorspace.b_max,
+                        frequency_map: colorspace.frequency_map.clone(),
+                    };
+                    return (left_colorspace, right_colorspace)
+                }
+                ColorChannel::Blue => {
+                    let left_colorspace = ColorSpace {
+                        r_min: colorspace.r_min,
+                        r_max: split_line,
+                        g_min: colorspace.g_min,
+                        g_max: colorspace.g_max,
+                        b_min: colorspace.b_min,
+                        b_max: colorspace.b_max,
+                        frequency_map: colorspace.frequency_map.clone(),
+                    };
+                    let right_colorspace = ColorSpace {
+                        r_min: split_line,
+                        r_max: colorspace.r_max,
+                        g_min: colorspace.g_min,
+                        g_max: colorspace.g_max,
+                        b_min: colorspace.b_min,
+                        b_max: colorspace.b_max,
+                        frequency_map: colorspace.frequency_map.clone(),
+                    };
+                    return (left_colorspace, right_colorspace)
+                }
+            }
+
+        }
+        // Make new colorspaces
+        let new_colorspaces = split_colorspace(
+            &colorspace, color_channel, median
+        );
+        println!("New Colorspaces: {}, {}", new_colorspaces.0, new_colorspaces.1);
+        
+        // Change ColorSpace values
+
         // case match color channel
         // traverse color_channel
         // If inverse cumulative sum is lower than half of total, then median found
