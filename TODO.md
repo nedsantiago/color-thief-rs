@@ -24,7 +24,7 @@ assert vbox.count == 3143
 
 The library follows a 7-stage data pipeline.
 
-### Flowchart
+### Process Flowchart
 ```mermaid
 flowchart TD;
     A[Start] --> B[Image];
@@ -66,5 +66,26 @@ flowchart TD;
 - Priority Queue (or sorting algorithm) - `sort_values`
 - Histogram - `Histogram`
 - Initial 3D Box builder - `make_min_max_box`
-- Median Cut Algorithm - `get_median()`
-- Orchestration function - `make_color_palette()`
+- Median Cut Algorithm - `get_median()` and `cut_box()`
+- Orchestration function - `make_color_palette() or main()`
+
+### Data Models
+
+```mermaid
+classDiagram
+Rgba
+Rgba : [T; 4] 0
+MinMaxBox
+MinmaxBox : u8 rmin
+MinmaxBox : u8 rmax
+MinmaxBox : u8 gmin
+MinmaxBox : u8 gmax
+MinmaxBox : u8 bmin
+MinmaxBox : u8 bmax
+FrequencyMap
+FrequencyMap: HashMap<u32, u32>
+Histogram
+Histogram : vec<u32>
+BoxQueue
+BoxQueue : vec<MinMaxBox>
+```
