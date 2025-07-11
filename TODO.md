@@ -73,22 +73,29 @@ flowchart TD;
 
 ```mermaid
 classDiagram
-Rgba
-Rgba : [T; 4] 0
-MinMaxBox
-MinMaxBox : u8 rmin
-MinMaxBox : u8 rmax
-MinMaxBox : u8 gmin
-MinMaxBox : u8 gmax
-MinMaxBox : u8 bmin
-MinMaxBox : u8 bmax
-FrequencyMap
-FrequencyMap: HashMap<u32, u32>
-Histogram
-Histogram : vec<u32>
-BoxQueue
-BoxQueue : vec<MinMaxBox>
-ColorPalette: vec<Rgba>
-BoxQueue --> MinMaxBox: uses
-Histogram --> FrequencyMap: refers to
+    class Rgba {
+        +array[T;4] 0
+    }
+    class MinMaxBox {
+        +u8 rmin
+        +u8 rmax
+        +u8 gmin
+        +u8 gmax
+        +u8 bmin
+        +u8 bmax
+    }
+    class FrequencyMap {
+        +HashMap[u32,u32] 0
+    }
+    class Histogram {
+        +Vec[u32, 4] 0
+    }
+    class BoxQueue {
+        +Vec[MinMaxBox] 0
+    }
+    class ColorPalette {
+        +Vec[Rgba] 0
+    }
+    BoxQueue --> MinMaxBox: uses
+    Histogram --> FrequencyMap: refers to
 ```
