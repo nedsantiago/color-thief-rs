@@ -9,6 +9,7 @@
 - In contrast to the Priority Queue, it seems that getting the median will indeed need a sorting of some kind.
 - According to Mozilla web docs using `~~` in Javascript is outdated practice [mdn web docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_NOT), better to use `Math.trunc()`. Thus, this [line](https://github.com/lokesh/quantize/blob/master/src/quantize.js#L488) from color thief could be improved.
 - I suspect that this [line](https://github.com/fengsp/color-thief-py/blob/master/colorthief.py#L199) may have an issue in cases where the median was found at the max value of the color range and will need to walk backwards *but* finds that the value immediately below it is `0` or `None`. In that case, it might make a right side that is empty.
+- Replace `ColorSpace` with a `RGBBox` with only the minimums and maximums. A separate `FrequencyMap`  and `Histogram`
 
 ## Possible tests
 
@@ -60,10 +61,10 @@ flowchart TD;
 7. **Find nearest color** - Colors not in palette can try to find the nearest.
 
 **Need to Implement**
-- 3D box
-- Color Map (hash table)
-- Priority Queue (or sorting algorithm)
-- Histogram
-- Initial 3D Box builder
-- Median Cut Algorithm
-- Orchestration function
+- 3D box - `RGBBox`
+- Color Map (hash table) - `FrequencyMap` and 
+- Priority Queue (or sorting algorithm) - `sort_values`
+- Histogram - `Histogram`
+- Initial 3D Box builder - `make_min_max_box`
+- Median Cut Algorithm - `get_median()`
+- Orchestration function - `make_color_palette()`
