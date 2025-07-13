@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::vec::Vec;
 use image::Rgba;
 /// Modified Median Cut Quantization (MMCQ) encapsulates all the
 /// functionality and constants for conducting the algorithm.
@@ -90,21 +91,223 @@ impl MMCQ {
         let b_range: u8 = colorspace.b_max - colorspace.b_min;
         println!("r_range:{}, g_range:{}, b_range:{}", r_range, g_range, b_range);
         // Check for largest range if-else statements are efficient
+        let mut total = 0;
+        let mut cumulative_sum: Vec<u32> = Vec::new();
+        let mut color_channel: ColorChannel = ColorChannel::Red;
         if (r_range >= g_range) && (r_range >= b_range) {
-            // Find median by looping through range and getting cumulative
-            let mut count = 0;
-            for i in 0..(r_range + 1) {
-                println!("i:{}", i);
+            // Create a cumulative histogram
+            for i in colorspace.r_min..(colorspace.r_max + 1) {
+                let mut sum = 0;
+                for j in colorspace.g_min..(colorspace.g_max + 1) {
+                    for k in colorspace.b_min..(colorspace.b_max + 1) {
+                        let hash = MMCQ::get_color_hash(i, j, k);
+                        if histogram.contains_key(&hash) {
+                            sum += histogram[&hash];
+                        }
+                    }
+                }
+                total += sum;
+                cumulative_sum.push(total);
+                // println!("total={}, sum={}", total, sum);
             }
-            // Using sorting heuristic (population in this case)
-            // Split into two color spaces
+            // println!("cumulative_sum={:?}", cumulative_sum);
         } else if (g_range > r_range) && (g_range > b_range) {
-            // Find median by looping through range
+            color_channel = ColorChannel::Green;
+            // Create a cumulative histogram
+            let mut total = 0;
+            let mut cumulative_sum: Vec<u32> = Vec::new();
+            for i in colorspace.g_min..(colorspace.g_max + 1) {
+                let mut sum = 0;
+                for j in colorspace.r_min..(colorspace.r_max + 1) {
+                    for k in colorspace.b_min..(colorspace.b_max + 1) {
+                        let hash = MMCQ::get_color_hash(i, j, k);
+                        if histogram.contains_key(&hash) {
+                            sum += histogram[&hash];
+                        }
+                    }
+                }
+                total += sum;
+                cumulative_sum.push(total);
+            }
         } else {
-            // Find median by looping through range and getting cumulative
-            // Using sorting heuristic (population in this case)
-            // Split into two color spaces
+            color_channel = ColorChannel::Blue;
+            // Create a cumulative histogram
+            for i in colorspace.b_min..(colorspace.b_max + 1) {
+                let mut sum = 0;
+                for j in colorspace.r_min..(colorspace.r_max + 1) {
+                    for k in colorspace.g_min..(colorspace.g_max + 1) {
+                        let hash = MMCQ::get_color_hash(i, j, k);
+                        if histogram.contains_key(&hash) {
+                            sum += histogram[&hash];
+                        }
+                    }
+                }
+                total += sum;
+                cumulative_sum.push(total);
+            }
         }
+        let mut inverse_cumulative: Vec<u32> = Vec::new();
+        // Inverse the data
+        println!("Beginning iteration through cumulative sum");
+        for step in cumulative_sum.iter() {
+            inverse_cumulative.push(total - step)
+        }
+        println!("Result: {:?}", inverse_cumulative);
+
+        let mut median: u8 = colorspace.r_min;
+        match color_channel {
+            ColorChannel::Red => {
+                // Find Median
+                // Initialize median as minimum value
+                // Starting at minimum and moving up to maximum
+                // NOTE failure of no median is found after iteration
+                // NOTE make this a return function get_rough_median
+                let mut i: u8 = colorspace.r_min;
+                let mut median_found: bool = false;
+                while !median_found && i <= colorspace.r_max {
+                    let current_sum: u32 = cumulative_sum[i as usize];
+                    let midpopulation: u32 = total / 2;
+                    println!("current_sum: {} > midpop: {}", current_sum, midpopulation);
+                    if current_sum > midpopulation {
+                        median_found = true;
+                        println!("Found the median at {}", i);
+                        median = i;
+                    }
+                    i += 1;
+                }
+                // NOTE Make into separate function get_valid_median
+                // Adjust Median based on sizes
+                // median should increase into larger box
+                let left = median - colorspace.r_min;
+                let right = colorspace.r_max - median;
+
+                // max value - 1, median + right / 2
+                if left <= right {
+                    // NOTE test for bugs about using `<` or `<=` here
+                    if (colorspace.r_max - 1) <= (median + right / 2) {
+                        median = colorspace.r_max - 1;
+                    } else {
+                        median = median + right / 2;
+                    }
+                } else {
+                    if (colorspace.r_min - 1) >= (median + right / 2) {
+                        median = colorspace.r_max - 1;
+                    } else {
+                        median = median + right / 2;
+                    }
+                }
+
+                println!("After first adjustment, median: {}", median);
+                // Median must be on a valid value while not being at last value
+                // First, move up when median not in valid value
+                println!("Cumulative sum at curr median: {}", cumulative_sum[median as usize]);
+                while cumulative_sum[median as usize] == 0 {
+                    median += 1;
+                }
+                println!("After moving up on zero {}", median);
+                // Second, move down when current median is total
+                while inverse_cumulative[median as usize] == 0 && cumulative_sum[median as usize] > 0 {
+                    median -= 1;
+                }
+                println!("After moving down on total {}", median);
+            }
+            ColorChannel::Green => {
+                println!("Splitting along Green!");
+            }
+            ColorChannel::Blue => {
+                println!("Splitting along Blue!");
+            }
+        }
+        // Split
+        println!("New median: {}", median);
+
+        fn split_colorspace(colorspace: &ColorSpace, color_channel: ColorChannel, split_line: u8) -> (ColorSpace, ColorSpace) {
+            match color_channel {
+                ColorChannel::Red => {
+                    let left_colorspace = ColorSpace {
+                        r_min: colorspace.r_min,
+                        r_max: split_line,
+                        g_min: colorspace.g_min,
+                        g_max: colorspace.g_max,
+                        b_min: colorspace.b_min,
+                        b_max: colorspace.b_max,
+                        frequency_map: colorspace.frequency_map.clone(),
+                    };
+                    let right_colorspace = ColorSpace {
+                        r_min: split_line,
+                        r_max: colorspace.r_max,
+                        g_min: colorspace.g_min,
+                        g_max: colorspace.g_max,
+                        b_min: colorspace.b_min,
+                        b_max: colorspace.b_max,
+                        frequency_map: colorspace.frequency_map.clone(),
+                    };
+                    return (left_colorspace, right_colorspace)
+                }
+                ColorChannel::Green => {
+                    let left_colorspace = ColorSpace {
+                        r_min: colorspace.r_min,
+                        r_max: split_line,
+                        g_min: colorspace.g_min,
+                        g_max: colorspace.g_max,
+                        b_min: colorspace.b_min,
+                        b_max: colorspace.b_max,
+                        frequency_map: colorspace.frequency_map.clone(),
+                    };
+                    let right_colorspace = ColorSpace {
+                        r_min: split_line,
+                        r_max: colorspace.r_max,
+                        g_min: colorspace.g_min,
+                        g_max: colorspace.g_max,
+                        b_min: colorspace.b_min,
+                        b_max: colorspace.b_max,
+                        frequency_map: colorspace.frequency_map.clone(),
+                    };
+                    return (left_colorspace, right_colorspace)
+                }
+                ColorChannel::Blue => {
+                    let left_colorspace = ColorSpace {
+                        r_min: colorspace.r_min,
+                        r_max: split_line,
+                        g_min: colorspace.g_min,
+                        g_max: colorspace.g_max,
+                        b_min: colorspace.b_min,
+                        b_max: colorspace.b_max,
+                        frequency_map: colorspace.frequency_map.clone(),
+                    };
+                    let right_colorspace = ColorSpace {
+                        r_min: split_line,
+                        r_max: colorspace.r_max,
+                        g_min: colorspace.g_min,
+                        g_max: colorspace.g_max,
+                        b_min: colorspace.b_min,
+                        b_max: colorspace.b_max,
+                        frequency_map: colorspace.frequency_map.clone(),
+                    };
+                    return (left_colorspace, right_colorspace)
+                }
+            }
+
+        }
+        // Make new colorspaces
+        let new_colorspaces = split_colorspace(
+            &colorspace, color_channel, median
+        );
+        println!("New Colorspaces: {}, {}", new_colorspaces.0, new_colorspaces.1);
+        
+        // Change ColorSpace values
+
+        // case match color channel
+        // traverse color_channel
+        // If inverse cumulative sum is lower than half of total, then median found
+        //  at that median, make copies of the current colorspace as left and right boxes
+        // Then check distance which is larger from min to median and max to median
+        // Do corrections based on which is larger (don't allow zero count color spaces)
+        // Create boxes based on the new dimensions
+        // Return a tuple
+        // Using sorting heuristic (population in this case)
+        
+        // Split into two color spaces
     }
 }
 
@@ -220,6 +423,19 @@ impl ColorSpace {
                 }
             }
         }
+    }
+
+    fn clone(&self) -> ColorSpace {
+        ColorSpace {
+            r_min: self.r_min,
+            r_max: self.r_max,
+            g_min: self.g_min,
+            g_max: self.g_max,
+            b_min: self.b_min,
+            b_max: self.b_max,
+            frequency_map: self.frequency_map.clone(),
+        }
+
     }
 }
 

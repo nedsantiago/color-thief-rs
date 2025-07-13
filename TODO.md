@@ -7,6 +7,9 @@
 - Create a png without data for testing, there may be a weird case where the while loop may go on until max iteration. In `color-thief-py` line 241, it seems to do nothing when the vbox count is 0 then increments `n_iter` and continues the while loop until max iteration. I think think the program should cite this as a failure mode.
 - The Priority Queue appears to sort each time the data changes but I wonder if the sorting is useful for the MMCQ algorithm. For most of it, it seems to only use the maximum value. May be better to only get max value then later run the full sort algorithm when getting the color palette.
 - In contrast to the Priority Queue, it seems that getting the median will indeed need a sorting of some kind.
+- According to Mozilla web docs using `~~` in Javascript is outdated practice [mdn web docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_NOT), better to use `Math.trunc()`. Thus, this [line](https://github.com/lokesh/quantize/blob/master/src/quantize.js#L488) from color thief could be improved.
+- I suspect that this [line](https://github.com/fengsp/color-thief-py/blob/master/colorthief.py#L199) may have an issue in cases where the median was found at the max value of the color range and will need to walk backwards *but* finds that the value immediately below it is `0` or `None`. In that case, it might make a right side that is empty.
+- Replace `ColorSpace` with a `RGBBox` with only the minimums and maximums. A separate `FrequencyMap`  and `Histogram`
 
 ## Possible tests
 
@@ -21,7 +24,7 @@ assert vbox.count == 3143
 
 The library follows a 7-stage data pipeline.
 
-### Flowchart
+### Process Flowchart
 ```mermaid
 flowchart TD;
     A[Start] --> B[Image];
@@ -58,10 +61,41 @@ flowchart TD;
 7. **Find nearest color** - Colors not in palette can try to find the nearest.
 
 **Need to Implement**
-- 3D box
-- Color Map (hash table)
-- Priority Queue (or sorting algorithm)
-- Histogram
-- Initial 3D Box builder
-- Median Cut Algorithm
-- Orchestration function
+- 3D box - `RGBBox`
+- Color Map (hash table) - `FrequencyMap` and 
+- Priority Queue (or sorting algorithm) - `sort_values`
+- Histogram - `Histogram`
+- Initial 3D Box builder - `make_min_max_box`
+- Median Cut Algorithm - `get_median()` and `cut_box()`
+- Orchestration function - `make_color_palette() or main()`
+
+### Data Models
+
+```mermaid
+classDiagram
+    class Rgba {
+        +array[T;4] 0
+    }
+    class MinMaxBox {
+        +u8 rmin
+        +u8 rmax
+        +u8 gmin
+        +u8 gmax
+        +u8 bmin
+        +u8 bmax
+    }
+    class FrequencyMap {
+        +HashMap[u32,u32] 0
+    }
+    class Histogram {
+        +Vec[u32, 4] 0
+    }
+    class BoxQueue {
+        +Vec[MinMaxBox] 0
+    }
+    class ColorPalette {
+        +Vec[Rgba] 0
+    }
+    BoxQueue --> MinMaxBox: uses
+    Histogram --> FrequencyMap: refers to
+```
