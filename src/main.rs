@@ -6,6 +6,11 @@ use std::collections::HashMap;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
+    algo1()
+}
+
+/// A temporary function to hold the algorithm while implemintin a refactor
+fn algo1() -> Result<(), Box<dyn Error>> {
     // NOTE FUTURE: Take file as cli argument
     let img_path = "/home/nix-admin/.config/bg-img/wallhaven-ox6d57_1920x1080.png";
     let max_colors: u8 = 10;
