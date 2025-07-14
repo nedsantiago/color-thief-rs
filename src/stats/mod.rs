@@ -1,4 +1,5 @@
 use crate::data_models::Histogram;
+use crate::data_models::FrequencyMap;
 
 
 fn calc_histogram(pixels: Vec<Rgba<u8>>) -> Histogram {
@@ -18,7 +19,7 @@ mod test_stats {
     #[test]
     fn test_calc_histogram() {
         let input: Vec<Rgba<u8>> = vec![
-            Rgba::from([31 as u8; 4]), Rgba::from([30 as u8; 4]),
+            Rgba::from([30 as u8; 4]), Rgba::from([30 as u8; 4]),
             Rgba::from([29 as u8; 4]), Rgba::from([28 as u8; 4]),
             Rgba::from([27 as u8; 4]), Rgba::from([26 as u8; 4]),
             Rgba::from([25 as u8; 4]), Rgba::from([24 as u8; 4]),
@@ -36,11 +37,11 @@ mod test_stats {
 
     // fn test_get_frequency_map() {
     //     let pixels = vec![
-    //         Rgba::from([255 as u8; 4]), Rgba::from([247 as u8; 4]),
-    //         Rgba::from([239 as u8; 4]), Rgba::from([231 as u8; 4]),
-    //         Rgba::from([223 as u8; 4]), Rgba::from([215 as u8; 4]),
-    //         Rgba::from([207 as u8; 4]), Rgba::from([199 as u8; 4]),
-    //         Rgba::from([191 as u8; 4]), Rgba::from([183 as u8; 4]),
+    //         Rgba::from([31 as u8; 4]), Rgba::from([30 as u8; 4]),
+    //         Rgba::from([29 as u8; 4]), Rgba::from([28 as u8; 4]),
+    //         Rgba::from([27 as u8; 4]), Rgba::from([26 as u8; 4]),
+    //         Rgba::from([25 as u8; 4]), Rgba::from([24 as u8; 4]),
+    //         Rgba::from([23 as u8; 4]), Rgba::from([22 as u8; 4]),
     //     ];
     //     let input = pixels;
     //     let resulted = MMCQ::get_frequency_map(input);
