@@ -6,6 +6,16 @@ use std::collections::HashMap;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
+    // Gather image data
+    // Check validity
+    // Convert image to RGBA pixels
+    // Filter pixels
+    // Create a MinMaxBox
+    // Create a FrequencyMap
+    // Create a Histogram per dimension
+    // Median Median Cut
+    // Calculate average color
+    // Find nearest colors
     algo1()
 }
 

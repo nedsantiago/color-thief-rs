@@ -24,6 +24,41 @@ assert vbox.count == 3143
 
 The library follows a 7-stage data pipeline.
 
+### Data Models
+
+```mermaid
+classDiagram
+    class Rgba {
+        +array[T;4] 0
+    }
+    class MinMaxBox {
+        +u8 rmin
+        +u8 rmax
+        +u8 gmin
+        +u8 gmax
+        +u8 bmin
+        +u8 bmax
+    }
+    class FrequencyMap {
+        +HashMap[u32,u32] 0
+    }
+    class Histogram {
+        +Vec[u32, 4] 0
+    }
+    class BoxQueue {
+        +Vec[MinMaxBox] 0
+    }
+    class ColorPalette {
+        +Vec[Rgba] 0
+    }
+    BoxQueue --> MinMaxBox: uses
+    Histogram --> FrequencyMap: refers to
+    ColorPalette --> Rgba: uses
+```
+
+### Functions
+
+
 ### Process Flowchart
 ```mermaid
 flowchart TD;
@@ -69,33 +104,3 @@ flowchart TD;
 - Median Cut Algorithm - `get_median()` and `cut_box()`
 - Orchestration function - `make_color_palette() or main()`
 
-### Data Models
-
-```mermaid
-classDiagram
-    class Rgba {
-        +array[T;4] 0
-    }
-    class MinMaxBox {
-        +u8 rmin
-        +u8 rmax
-        +u8 gmin
-        +u8 gmax
-        +u8 bmin
-        +u8 bmax
-    }
-    class FrequencyMap {
-        +HashMap[u32,u32] 0
-    }
-    class Histogram {
-        +Vec[u32, 4] 0
-    }
-    class BoxQueue {
-        +Vec[MinMaxBox] 0
-    }
-    class ColorPalette {
-        +Vec[Rgba] 0
-    }
-    BoxQueue --> MinMaxBox: uses
-    Histogram --> FrequencyMap: refers to
-```
