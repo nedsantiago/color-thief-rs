@@ -55,7 +55,7 @@ classDiagram
 - `histogram` may need `inverse_histogram` and `volume_count_histogram` counterparts
 - Need more details for `calc_nearest_colors`, `calc_average_colors`, `twophase_split`, and `iterative_split`
 - `sort_boxes` should sort the BoxQueues before usage
-- `cut_box` should be implemented inside `iterative_split` and `twophase_split`
+- `split_box` should be implemented inside `iterative_split` and `twophase_split`
 
 ### Process Flowchart
 
