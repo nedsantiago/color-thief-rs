@@ -13,3 +13,5 @@ pub struct MinMaxBox {
     pub bmin: u8,
     pub bmax: u8,
 }
+
+pub struct BoxQueue(pub Vec<MinMaxBox>);
