@@ -10,6 +10,8 @@
 - According to Mozilla web docs using `~~` in Javascript is outdated practice [mdn web docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_NOT), better to use `Math.trunc()`. Thus, this [line](https://github.com/lokesh/quantize/blob/master/src/quantize.js#L488) from color thief could be improved.
 - I suspect that this [line](https://github.com/fengsp/color-thief-py/blob/master/colorthief.py#L199) may have an issue in cases where the median was found at the max value of the color range and will need to walk backwards *but* finds that the value immediately below it is `0` or `None`. In that case, it might make a right side that is empty.
 - Replace `ColorSpace` with a `RGBBox` with only the minimums and maximums. A separate `FrequencyMap`  and `Histogram`
+- To improve Do not Repeat Yourself (DRY), try using the match case to re-assign color values to `main_dim`, `side_dim1`, `side_dim2` then continue with the algorithm. This should stop repeating the algorithm since only the variables truly change. For `min` and `max` do the same with `main_dim_max` and `side_dim_max`.
+- Does Color Thief need the frequency map? I think it may only need the histogram
 
 ## Possible tests
 
@@ -30,6 +32,9 @@ The library follows a 7-stage data pipeline.
 classDiagram
     class Rgba {
         +array[T;4] 0
+    }
+    class RgbaImage {
+        +Vec[Rgba]
     }
     class MinMaxBox {
         +u8 rmin
@@ -53,37 +58,38 @@ classDiagram
     }
     BoxQueue --> MinMaxBox: uses
     Histogram --> FrequencyMap: refers to
-    ColorPalette --> Rgba: uses
+    RgbaImage --> Rgba: uses
 ```
-
-### Functions
-
 
 ### Process Flowchart
+
 ```mermaid
 flowchart TD;
-    A[Start] --> B[Image];
-    B --> C{Is valid?};
-    C --> |No| D[Exit with error];
-    C --> |Yes, convert| E[RGBA Pixels];
-    E --> |Filter pixles| F[RGB Pixels];
-    F --> |Bin + min & max| G[ColorSpace];
-    F --> |Frequency Analysis| H[Histogram];
-    G --> |Iterative Splitting| I[Vector of Colorspaces];
-    H --> I;
-    I --> |Two-phase Splitting| J[Vector of Colorspaces];
-    J --> |Average Color| K[Color Map];
-    K --> |Nearest Color| L[Color Palette];
-    L --> M[End];
+    START([START]) --> img_path[/img_path: String/]
+    img_path --> load_img[load_img]
+    load_img --> rgba_img[/img: RgbaImage/]
+    rgba_img --> calc_minmax_freq_histo[calc_minmax_freq_histo]
+    calc_minmax_freq_histo --> init_minmax_box[/init_minmax_box: MinMaxBox/]
+    calc_minmax_freq_histo --> frequency_map[/frequency_map: FrequencyMap/]
+    calc_minmax_freq_histo --> histogram[/histogram: Histogram/]
+    init_minmax_box --> iterative_split[iterative_split]
+    histogram --> iterative_split
+    iterative_split --> boxes_itersplit[/boxes_itersplit: BoxQueue/]
+    boxes_itersplit --> two_phase_split[two_phase_split]
+    two_phase_split --> boxes_two_phase[/boxes_two_phase: BoxQueue/]
+    boxes_two_phase --> calc_average_colors[calc_average_colors]
+    calc_average_colors --> average_colors[/average_colors: ColorPalette/]
+    average_colors --> calc_nearest_colors[/calc_nearest_colors/]
+    calc_nearest_colors --> nearest_colors[nearest_colors: ColorPalette]
+    nearest_colors --> END([END])
 ```
 
-1. **Image to Pixel**: Given a directory to an image, the Color Thief will read its data and create an iterable pixels in rgba format.
-2. **Pixel Validity Filter**: Invalid pixels will be filtered out of the data.
-3. **Pixels to Color Summary**: Bin the pixels and record the minimum and maximum values of each rgb pixel
-4. **Median Split Color Summary by frequency**: sort hash colors by their count and median split based on the accumulated count (true median: split by count)
-5. **Median Split Color Summary by volume-count**: sort by `volume * count` and median split
-6. **Calculate average color of each Color Summary**: Gather the average color for each Color Summary
-7. **Create a color palette**: Create a list of colors based on the average colors selection here
+- `calc_minmax_freq_histo` will also bin the pixels based through pixel shifting.
+- Between `load_img` and `calc_minmax_freq_histo`, algorithm should check for pixel validity.
+- `histogram` may need `inverse_histogram` and `volume_count_histogram` counterparts
+- Need more details for `calc_nearest_colors`, `calc_average_colors`, `twophase_split`, and `iterative_split`
+- `sort_boxes` should sort the BoxQueues before usage
+- `cut_box` should be implemented inside `iterative_split` and `twophase_split`
 
 **Modified Median Cut Quantization (MMCQ) Algorithm Explanation**
 
@@ -94,13 +100,4 @@ flowchart TD;
 5. **Two-phase Splitting** - Split by pixel `count` until 75% target colors, then split based on `count * volume`.
 6. **Map Colors** - based on the average color per box
 7. **Find nearest color** - Colors not in palette can try to find the nearest.
-
-**Need to Implement**
-- 3D box - `RGBBox`
-- Color Map (hash table) - `FrequencyMap` and 
-- Priority Queue (or sorting algorithm) - `sort_values`
-- Histogram - `Histogram`
-- Initial 3D Box builder - `make_min_max_box`
-- Median Cut Algorithm - `get_median()` and `cut_box()`
-- Orchestration function - `make_color_palette() or main()`
 
