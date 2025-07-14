@@ -2,6 +2,7 @@ mod img_io;
 mod color_calc;
 mod queue;
 mod stats;
+mod data_models;
 use std::error::Error;
 use std::collections::HashMap;
 
