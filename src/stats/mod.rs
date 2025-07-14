@@ -1,8 +1,13 @@
 use crate::data_models::Histogram;
 
 
-fn calc_histogram(pixels: Vec<Rgba<u8>>) {
-
+fn calc_histogram(pixels: Vec<Rgba<u8>>) -> Histogram {
+    Histogram(
+        vec![
+            1, 1, 1, 1, 1,
+            1, 1, 1, 1, 0,
+        ]
+    )
 }
 
 use image::Rgba;
@@ -10,6 +15,7 @@ use image::Rgba;
 mod test_stats {
     use super::*;
 
+    #[test]
     fn test_calc_histogram() {
         let input: Vec<Rgba<u8>> = vec![
             Rgba::from([31 as u8; 4]), Rgba::from([30 as u8; 4]),
@@ -18,14 +24,14 @@ mod test_stats {
             Rgba::from([25 as u8; 4]), Rgba::from([24 as u8; 4]),
             Rgba::from([23 as u8; 4]), Rgba::from([22 as u8; 4]),
         ];
-        let found = calc_histogram(input);
+        let found = calc_histogram(input).0;
         let expected = Histogram(
             vec![
                 1, 1, 1, 1, 1,
                 1, 1, 1, 1, 1,
             ]
-        );
-        assert_eq!(expected, found, "\nEXPECTED\n{:?}\n  FOUND\n{:?}", expected, found);
+        ).0;
+        assert_eq!(expected, found, "Logic Error:");
     }
 
     // fn test_get_frequency_map() {
