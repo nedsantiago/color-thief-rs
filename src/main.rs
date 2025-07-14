@@ -1,22 +1,26 @@
 mod img_io;
 mod color_calc;
 mod queue;
+mod stats;
 use std::error::Error;
 use std::collections::HashMap;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // Gather image data
-    // Check validity
-    // Convert image to RGBA pixels
+    // Load Image Data
+    let img_path = "/home/nix-admin/.config/bg-img/wallhaven-ox6d57_1920x1080.png";
+    let img: image::RgbaImage = img_io::open_img_rgba(img_path)?;
+    
     // Filter pixels
-    // Create a MinMaxBox
-    // Create a FrequencyMap
-    // Create a Histogram per dimension
-    // Median Median Cut
-    // Calculate average color
+    // Check validity
+    // Calculate Initial MinMaxBox
+    // Calculate Frequency Map
+    // Calculate Histogram per dimension
+    // Check validity
+    // Modified Median Cut Quantization
+    // Calculate average color per MinMaxBox
     // Find nearest colors
-    algo1()
+    Ok(())
 }
 
 /// A temporary function to hold the algorithm while implemintin a refactor
