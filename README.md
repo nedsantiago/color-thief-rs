@@ -47,7 +47,6 @@ classDiagram
         +Vec[Rgba] 0
     }
     BoxQueue --> MinMaxBox: uses
-    Histogram --> FrequencyMap: refers to
     RgbaImage --> Rgba: uses
 ```
 - `calc_minmax_freq_histo` will also bin the pixels based through pixel shifting.
