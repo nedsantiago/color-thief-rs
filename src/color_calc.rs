@@ -323,7 +323,6 @@ mod test_MMCQ {
         assert_eq!(resulted, expected, "\nEXPECTED\n{}\nRESULTED\n{}", expected, resulted);
     }
 
-    // }
 }
 
 pub struct ColorSpace {
