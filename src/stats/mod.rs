@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::data_models::{ Histogram, FrequencyMap, MinMaxBox };
 
 
-fn calc_histogram(pixels: Vec<Rgba<u8>>) -> Histogram {
+fn calc_histogram(pixels: &Vec<Rgba<u8>>) -> Histogram {
     let mut histogram: Vec<u32> = Vec::new();
     let first_pixel = pixels[0];
 
@@ -35,7 +35,7 @@ fn calc_histogram(pixels: Vec<Rgba<u8>>) -> Histogram {
     )
 }
 
-fn calc_frequency_map(pixels: Vec<Rgba<u8>>) -> FrequencyMap {
+fn calc_frequency_map(pixels: &Vec<Rgba<u8>>) -> FrequencyMap {
     FrequencyMap(
         HashMap::from([
             (32767, 1), (31710, 1),
@@ -47,7 +47,7 @@ fn calc_frequency_map(pixels: Vec<Rgba<u8>>) -> FrequencyMap {
     )
 }
 
-fn calc_minmax_box(pixels: Vec<Rgba<u8>>) -> MinMaxBox {
+fn calc_minmax_box(pixels: &Vec<Rgba<u8>>) -> MinMaxBox {
     // Initialize to first value
     let first_pixel: Rgba<u8> = pixels[0];
     let mut rmin: u8 = first_pixel.0[0];
@@ -102,7 +102,7 @@ mod test_stats {
             Rgba::from([25 as u8; 4]), Rgba::from([24 as u8; 4]),
             Rgba::from([23 as u8; 4]), Rgba::from([22 as u8; 4]),
         ];
-        let found = calc_histogram(input).0;
+        let found = calc_histogram(&input).0;
         let expected = Histogram(
             vec![
                 1, 1, 1, 1, 1,
@@ -121,7 +121,7 @@ mod test_stats {
             Rgba::from([25 as u8; 4]), Rgba::from([24 as u8; 4]),
             Rgba::from([23 as u8; 4]), Rgba::from([22 as u8; 4]),
         ];
-        let found = calc_frequency_map(input).0;
+        let found = calc_frequency_map(&input).0;
         let expected = FrequencyMap(
             HashMap::from([
                 (32767, 1), (31710, 1),
@@ -143,7 +143,7 @@ mod test_stats {
             Rgba::from([25 as u8; 4]), Rgba::from([24 as u8; 4]),
             Rgba::from([23 as u8; 4]), Rgba::from([22 as u8; 4]),
         ];
-        let found = calc_minmax_box(input);
+        let found = calc_minmax_box(&input);
         let expected = MinMaxBox {
             rmin: 22,
             rmax: 31,
