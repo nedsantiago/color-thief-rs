@@ -10,7 +10,7 @@ use image::Rgba;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Load Image Data
-    let img_path = "/home/ubuntu-admin/dotfiles/config/bg-img/wallhaven-ox6d57_1920x1080.png";
+    let img_path = "./tests/data/12colors.png";
     let img: image::RgbaImage = img_io::open_img_rgba(img_path)?;
     
     // NOTE FUTURE: Add Failure mode when Image too large

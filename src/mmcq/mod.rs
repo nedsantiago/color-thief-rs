@@ -1,9 +1,26 @@
 use std::vec::Vec;
+use crate::data_models::{ ColorChannel, MinMaxBox, Histogram };
 use image::{ Rgba };
 
 
-fn iterative_split() {
+fn iterative_split(histogram: Histogram, minmax_box: MinMaxBox) {
     println!("Begin Iterative Split");
+    // Put MinMaxBox in a vector
+    // Get highest MinMaxBox from a count-sorted vector
+    // Get median
+    // Split Box
+    // Until max iterations reached
+}
+
+fn two_phase_split(histogram: Histogram, minmax_boxes: Vec<MinMaxBox>) {
+    println!("Begin Two-Phase Split");
+    // Get highest MinMaxBox from a volume-count-sorted vector
+    // Get median
+    // Split Box
+    // Until max iterations reached
+}
+
+fn get_median(histogram: Histogram, minmax_box: MinMaxBox) {
     // Find longest dimension in MinMaxBox (biggest range)
     // Cut the perpendicular to longest dimension
     // Create a cumulative histogram (may implement in main)
@@ -14,8 +31,9 @@ fn iterative_split() {
     // After you get median, split the MinMaxBox
 }
 
-fn two_phase_split() {
-    println!("Begin Two-Phase Split");
+fn split_box(minmax_box: MinMaxBox, split_val: u8) {
+    // Create a left box
+    // Create a right box
 }
 
 /// Modified Median Cut Quantization (MMCQ) encapsulates all the
