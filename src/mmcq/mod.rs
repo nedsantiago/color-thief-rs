@@ -4,6 +4,14 @@ use image::{ Rgba };
 
 fn iterative_split() {
     println!("Begin Iterative Split");
+    // Find longest dimension in MinMaxBox (biggest range)
+    // Cut the perpendicular to longest dimension
+    // Create a cumulative histogram (may implement in main)
+    // Calculate inverse cumulative histogram
+    // NOTE failure when no median is found
+    // Find the median (NOTE get_rough_median func)
+    // Adjust the median to a bin with a count move median
+    // After you get median, split the MinMaxBox
 }
 
 fn two_phase_split() {
