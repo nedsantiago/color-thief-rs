@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-use crate::data_models::{ MinMaxBox };
 use std::vec::Vec;
 use image::{ Rgba };
 
@@ -17,7 +15,7 @@ fn two_phase_split() {
 /// The algorithm uses binary operations. It removes smaller-
 /// valued bits and leaves the larger-valued bits (i.e. 00001111 becomes
 /// 00001 taking away the right-most bits) to build its palette with.
-/// Defaults to 5 significant bits.
+/// Uses 5 significant bits.
 pub struct MMCQ;
 
 impl MMCQ {
@@ -25,7 +23,7 @@ impl MMCQ {
     const SIGNIFICANT_BITS: u8 = 5;
     const BIT_SHIFT: u8 = 8 - Self::SIGNIFICANT_BITS;
 
-    /// Creates an ID / index number / hash for each binned color
+    /// Creates an hashed color for each binned color
     /// combination, particularly important when implementing HashMap.
     /// The method takes RGB values and returns an unsigned integer
     /// representing the ID. Uses bit shifting to create unique ID's

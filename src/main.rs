@@ -10,7 +10,6 @@ use image::Rgba;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Load Image Data
-    // NOTE FUTURE: Take file as cli argument
     let img_path = "/home/ubuntu-admin/dotfiles/config/bg-img/wallhaven-ox6d57_1920x1080.png";
     let img: image::RgbaImage = img_io::open_img_rgba(img_path)?;
     
@@ -19,19 +18,22 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Filter pixels
     let pixels: Vec<Rgba<u8>> = img
         .pixels()
+        // Filter out half-transparent pixels
         .filter(|&pixel| {
             pixel[3] > 125
         })
+        // Bin using MMCQ bit shift
         .map(|&pixel| MMCQ::bin_pixel(pixel))
         .collect();
 
     // Check validity
-    let minmax_box: MinMaxBox = stats::calc_minmax_box(&pixels);
-
-    println!("minmax: {}", minmax_box);
 
     // Calculate Initial MinMaxBox
+    let minmax_box: MinMaxBox = stats::calc_minmax_box(&pixels);
+    println!("minmax: {}", minmax_box);
+
     // Calculate Frequency Map
+
     // Calculate Histogram per dimension
     let rhistogram = stats::calc_histogram(ColorChannel::Red, &pixels);
     let ghistogram = stats::calc_histogram(ColorChannel::Green, &pixels);
@@ -39,9 +41,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Red Histogram: {:?}", rhistogram.0);
     println!("Green Histogram: {:?}", ghistogram.0);
     println!("Blue Histogram: {:?}", bhistogram.0);
+
     // Check validity
+
     // Modified Median Cut Quantization
+
     // Calculate average color per MinMaxBox
+
     // Find nearest colors
     Ok(())
 }
