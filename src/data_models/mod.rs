@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 
-pub struct Histogram(pub Vec<u8>);
+pub struct Histogram(pub Vec<u32>);
 
 pub struct FrequencyMap(pub HashMap<u32,u32>);
 
@@ -27,3 +27,9 @@ impl std::fmt::Display for MinMaxBox {
 }
 
 pub struct BoxQueue(pub Vec<MinMaxBox>);
+
+pub enum ColorChannel {
+    Red,
+    Green,
+    Blue
+}

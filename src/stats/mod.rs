@@ -4,6 +4,29 @@ use crate::data_models::{ Histogram, FrequencyMap, MinMaxBox };
 
 
 fn calc_histogram(pixels: Vec<Rgba<u8>>) -> Histogram {
+    let mut histogram: Vec<u32> = Vec::new();
+    let first_pixel = pixels[0];
+
+    // Assume red channel for now
+    let first_red = first_pixel.0[0];
+    let mut min = first_red;
+    let mut max = first_red;
+
+    for pixel in pixels {
+        let red: u8 = pixel.0[0];
+        let green: u8 = pixel.0[1];
+        let blue: u8 = pixel.0[2];
+
+        let vec_index = red;
+        replace_minmax(vec_index, &mut min, &mut max);
+
+        while histogram.len() < max as usize {
+            let count: u32 = 0;
+            histogram.push(count);
+        }
+        histogram[(vec_index - 1) as usize] += 1;
+    }
+    println!("Histogram {:?}\nlen {}", histogram, histogram.len());
     Histogram(
         vec![
             1, 1, 1, 1, 1,
