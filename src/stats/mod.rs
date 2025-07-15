@@ -46,7 +46,6 @@ fn generate_histogram(color_ch: ColorChannel, pixels: &Vec<Rgba<u8>>) -> Histogr
         }
         // Increment value at index by one
         histogram[val as usize] += 1;
-        println!("Upated Histogram@{} -> {}", val, histogram[(val) as usize]);
     }
     // Remove all values from zero to minimum value
     histogram.drain(..(min as usize));
@@ -67,7 +66,7 @@ fn calc_frequency_map(pixels: &Vec<Rgba<u8>>) -> FrequencyMap {
     )
 }
 
-fn calc_minmax_box(pixels: &Vec<Rgba<u8>>) -> MinMaxBox {
+pub fn calc_minmax_box(pixels: &Vec<Rgba<u8>>) -> MinMaxBox {
     // Initialize to first value
     let first_pixel: Rgba<u8> = pixels[0];
     let mut rmin: u8 = first_pixel.0[0];

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use crate::data_models::{ MinMaxBox };
 use std::vec::Vec;
-use image::{ Rgba, Rgb };
+use image::{ Rgba };
 
 
 fn iterative_split() {
@@ -42,15 +42,15 @@ impl MMCQ {
         r_lshift + g_lshift + b_lshift
     }
 
-    pub fn bin_pixel(pixel: Rgba<u8>) -> Rgb<u8> {
+    pub fn bin_pixel(pixel: Rgba<u8>) -> Rgba<u8> {
         let pixel = pixel.0;
 
         let r_rshift: u8 = pixel[0] >> Self::BIT_SHIFT;
         let g_rshift: u8 = pixel[1] >> Self::BIT_SHIFT;
         let b_rshift: u8 = pixel[2] >> Self::BIT_SHIFT;
 
-        Rgb {
-            0: [r_rshift, g_rshift, b_rshift]
+        Rgba {
+            0: [r_rshift, g_rshift, b_rshift, pixel[3]]
         }
     }
 }
