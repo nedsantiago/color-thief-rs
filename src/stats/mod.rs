@@ -1,6 +1,7 @@
 use image::Rgba;
 use std::collections::HashMap;
 use crate::data_models::{ Histogram, FrequencyMap, MinMaxBox };
+use crate::data_models;
 
 
 fn calc_histogram(pixels: &Vec<Rgba<u8>>) -> Histogram {
@@ -26,13 +27,10 @@ fn calc_histogram(pixels: &Vec<Rgba<u8>>) -> Histogram {
         }
         histogram[(vec_index - 1) as usize] += 1;
     }
-    println!("Histogram {:?}\nlen {}", histogram, histogram.len());
-    Histogram(
-        vec![
-            1, 1, 1, 1, 1,
-            1, 1, 1, 1, 0,
-        ]
-    )
+    let new_histogram: Vec<u32> = histogram.drain(..(min as usize)).collect();
+    data_models::Histogram{
+        0: new_histogram
+    }
 }
 
 fn calc_frequency_map(pixels: &Vec<Rgba<u8>>) -> FrequencyMap {
