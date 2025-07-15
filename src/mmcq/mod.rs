@@ -58,10 +58,18 @@ mod test_MMCQ {
     use super::*;
 
     #[test]
-    fn test_hash_rgb() {
+    fn test_hash_pixel() {
         let input = [15, 12, 10];
-        let resulted = MMCQ::hash_rgb(input[0], input[1], input[2]);
+        let found = MMCQ::hash_rgb(input[0], input[1], input[2]);
         let expected = 15754;
-        assert_eq!(resulted, expected, "\nEXPECTED\n{}\nRESULTED\n{}", expected, resulted);
+        assert_eq!(expected, found, "Logic Error:");
+    }
+
+    #[test]
+    fn test_bin_color() {
+        let input = Rgba::from([255 as u8; 4]);
+        let found = MMCQ::bin_pixel(input);
+        let expected = Rgba::from([31, 31, 31, 255]);
+        assert_eq!(expected, found, "Logic Error:");
     }
 }
