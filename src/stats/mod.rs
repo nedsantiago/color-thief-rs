@@ -1,7 +1,6 @@
+use image::Rgba;
 use std::collections::HashMap;
-use crate::data_models::Histogram;
-use crate::data_models::FrequencyMap;
-use crate::data_models::MinMaxBox;
+use crate::data_models::{ Histogram, FrequencyMap, MinMaxBox };
 
 
 fn calc_histogram(pixels: Vec<Rgba<u8>>) -> Histogram {
@@ -66,7 +65,7 @@ fn replace_minmax(val: u8, min: &mut u8, max: &mut u8) -> () {
     }
 }
 
-use image::Rgba;
+
 #[cfg(test)]
 mod test_stats {
     use super::*;
