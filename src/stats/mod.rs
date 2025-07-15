@@ -13,20 +13,28 @@ fn calc_histogram(pixels: &Vec<Rgba<u8>>) -> Histogram {
     let mut min = first_red;
     let mut max = first_red;
 
+    // Get Frequency per pixel value, where value is index
     for pixel in pixels {
         let red: u8 = pixel.0[0];
         let green: u8 = pixel.0[1];
         let blue: u8 = pixel.0[2];
 
+        // Use color channel value as index
         let vec_index = red;
+        // Update min and max
         replace_minmax(vec_index, &mut min, &mut max);
 
+        // Lenghten histogram when too short
         while histogram.len() < max as usize {
+            // New values will be initialized to zero
             let count: u32 = 0;
             histogram.push(count);
         }
+        println!("Histogram: {:?}", histogram);
+        // Increment value at index by one
         histogram[(vec_index - 1) as usize] += 1;
     }
+    // Remove the all values from zero to minimum value
     histogram.drain(..((min - 1) as usize));
     data_models::Histogram{
         0: histogram
