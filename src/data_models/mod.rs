@@ -29,7 +29,7 @@ impl std::fmt::Display for MinMaxBox {
 pub struct BoxQueue(pub Vec<MinMaxBox>);
 
 pub enum ColorChannel {
-    Red,
-    Green,
-    Blue
+    Red = 0,
+    Green = 1,
+    Blue = 2,
 }

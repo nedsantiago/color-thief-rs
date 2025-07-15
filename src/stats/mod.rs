@@ -1,43 +1,54 @@
 use image::Rgba;
 use std::collections::HashMap;
-use crate::data_models::{ Histogram, FrequencyMap, MinMaxBox };
-use crate::data_models;
+use crate::data_models::{ Histogram, FrequencyMap, MinMaxBox, ColorChannel };
 
 
-fn calc_histogram(pixels: &Vec<Rgba<u8>>) -> Histogram {
+fn calc_histogram(color_ch: ColorChannel, pixels: &Vec<Rgba<u8>>) -> Histogram {
+    // Match algorithm to ColorChannel
+    match color_ch {
+        ColorChannel::Red => {
+            generate_histogram(color_ch, &pixels)
+        }
+        ColorChannel::Green => {
+            generate_histogram(color_ch, &pixels)
+        }
+        ColorChannel::Blue => {
+            generate_histogram(color_ch, &pixels)
+        }
+    }
+}
+
+fn generate_histogram(color_ch: ColorChannel, pixels: &Vec<Rgba<u8>>) -> Histogram {
+    let color_ch: usize = color_ch as usize;
     let mut histogram: Vec<u32> = Vec::new();
     let first_pixel = pixels[0];
 
     // Assume red channel for now
-    let first_red = first_pixel.0[0];
-    let mut min = first_red;
-    let mut max = first_red;
+    let first_val = first_pixel.0[color_ch];
+    let mut min = first_val;
+    let mut max = first_val;
 
     // Get Frequency per pixel value, where value is index
     for pixel in pixels {
-        let red: u8 = pixel.0[0];
-        let green: u8 = pixel.0[1];
-        let blue: u8 = pixel.0[2];
+        // Value will be used as index
+        let val: u8 = pixel.0[color_ch];
 
-        // Use color channel value as index
-        let vec_index = red;
         // Update min and max
-        replace_minmax(vec_index, &mut min, &mut max);
+        replace_minmax(val, &mut min, &mut max);
 
         // Lenghten histogram when too short
+        // (max + 1) accounts for index 32 hashing truncation
         while histogram.len() < (max + 1) as usize {
             // New values will be initialized to zero
             let count: u32 = 0;
             histogram.push(count);
-            dbg!(histogram.len());
         }
-        println!("Histogram: {:?}", histogram);
         // Increment value at index by one
-        histogram[(vec_index) as usize] += 1;
+        histogram[(val) as usize] += 1;
     }
-    // Remove the all values from zero to minimum value
+    // Remove all values from zero to minimum value
     histogram.drain(..(min as usize));
-    data_models::Histogram{
+    Histogram{
         0: histogram
     }
 }
@@ -109,7 +120,7 @@ mod test_stats {
             Rgba::from([25 as u8; 4]), Rgba::from([24 as u8; 4]),
             Rgba::from([23 as u8; 4]), Rgba::from([22 as u8; 4]),
         ];
-        let found = calc_histogram(&input).0;
+        let found = calc_histogram(ColorChannel::Red, &input).0;
         let expected = Histogram(
             vec![
                 1, 1, 1, 1, 1,
