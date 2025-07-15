@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use crate::data_models::{ Histogram, FrequencyMap, MinMaxBox, ColorChannel };
 
 
-fn calc_histogram(color_ch: ColorChannel, pixels: &Vec<Rgba<u8>>) -> Histogram {
+pub fn calc_histogram(
+    color_ch: ColorChannel, pixels: &Vec<Rgba<u8>>) -> Histogram {
     // Match algorithm to ColorChannel
     match color_ch {
         ColorChannel::Red => {
