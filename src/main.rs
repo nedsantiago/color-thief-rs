@@ -24,7 +24,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         })
         .map(|&pixel| MMCQ::bin_pixel(pixel))
         .collect();
-    println!("Binned Pixels: {:?}", pixels);
 
     // Check validity
     let minmax_box: MinMaxBox = stats::calc_minmax_box(&pixels);
