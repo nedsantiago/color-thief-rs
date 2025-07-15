@@ -14,4 +14,16 @@ pub struct MinMaxBox {
     pub bmax: u8,
 }
 
+impl std::fmt::Display for MinMaxBox {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(
+            f,
+            "r({},{}), g({},{}), b({},{})",
+            self.rmin, self.rmax,
+            self.gmin, self.gmax,
+            self.bmin, self.bmax,
+        )
+    }
+}
+
 pub struct BoxQueue(pub Vec<MinMaxBox>);
