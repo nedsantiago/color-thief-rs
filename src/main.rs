@@ -1,7 +1,9 @@
+mod data_models;
 mod img_io;
 mod stats;
-mod data_models;
+mod mmcq;
 use crate::data_models::{ ColorChannel };
+use crate::mmcq::MMCQ;
 use std::error::Error;
 use image::Rgba;
 
@@ -22,18 +24,19 @@ fn main() -> Result<(), Box<dyn Error>> {
         })
         .map(|&pixel| pixel)
         .collect();
+    println!("{:?}", pixels);
 
     // Check validity
 
     // Calculate Initial MinMaxBox
     // Calculate Frequency Map
     // Calculate Histogram per dimension
-    let rhistogram = stats::calc_histogram(ColorChannel::Red, &pixels);
-    let ghistogram = stats::calc_histogram(ColorChannel::Green, &pixels);
-    let bhistogram = stats::calc_histogram(ColorChannel::Blue, &pixels);
-    println!("Red Histogram: {:?}", rhistogram.0);
-    println!("Green Histogram: {:?}", ghistogram.0);
-    println!("Blue Histogram: {:?}", bhistogram.0);
+    // let rhistogram = stats::calc_histogram(ColorChannel::Red, &pixels);
+    // let ghistogram = stats::calc_histogram(ColorChannel::Green, &pixels);
+    // let bhistogram = stats::calc_histogram(ColorChannel::Blue, &pixels);
+    // println!("Red Histogram: {:?}", rhistogram.0);
+    // println!("Green Histogram: {:?}", ghistogram.0);
+    // println!("Blue Histogram: {:?}", bhistogram.0);
     // Check validity
     // Modified Median Cut Quantization
     // Calculate average color per MinMaxBox
