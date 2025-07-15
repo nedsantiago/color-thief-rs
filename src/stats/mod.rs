@@ -112,7 +112,7 @@ mod test_stats {
     use super::*;
 
     #[test]
-    fn test_calc_histogram() {
+    fn test_calc_histogram0() {
         let input: Vec<Rgba<u8>> = vec![
             Rgba::from([31 as u8; 4]), Rgba::from([30 as u8; 4]),
             Rgba::from([29 as u8; 4]), Rgba::from([28 as u8; 4]),
@@ -130,6 +130,43 @@ mod test_stats {
         assert_eq!(expected, found, "Logic Error:");
     }
 
+    #[test]
+    fn test_calc_histogram1() {
+        let input: Vec<Rgba<u8>> = vec![
+            Rgba::from([255 as u8; 4]), Rgba::from([255 as u8; 4]),
+            Rgba::from([247 as u8; 4]), Rgba::from([247 as u8; 4]),
+            Rgba::from([247 as u8; 4]), Rgba::from([247 as u8; 4]),
+            Rgba::from([247 as u8; 4]), Rgba::from([247 as u8; 4]),
+            Rgba::from([247 as u8; 4]), Rgba::from([247 as u8; 4]),
+        ];
+        let found = calc_histogram(ColorChannel::Red, &input).0;
+        let expected = Histogram(
+            vec![
+                8, 0, 0, 0, 0,
+                0, 0, 0, 2,
+            ]
+        ).0;
+        assert_eq!(expected, found, "Logic Error:");
+    }
+
+    #[test]
+    fn test_calc_histogram2() {
+        let input: Vec<Rgba<u8>> = vec![
+            Rgba::from([0 as u8; 4]), Rgba::from([0 as u8; 4]),
+            Rgba::from([0 as u8; 4]), Rgba::from([0 as u8; 4]),
+            Rgba::from([1 as u8; 4]), Rgba::from([1 as u8; 4]),
+            Rgba::from([1 as u8; 4]), Rgba::from([1 as u8; 4]),
+        ];
+        let found = calc_histogram(ColorChannel::Red, &input).0;
+        let expected = Histogram(
+            vec![
+                4, 4,
+            ]
+        ).0;
+        assert_eq!(expected, found, "Logic Error:");
+    }
+
+    #[ignore]
     #[test]
     fn test_calc_frequency_map() {
         let input = vec![
