@@ -27,9 +27,9 @@ fn calc_histogram(pixels: &Vec<Rgba<u8>>) -> Histogram {
         }
         histogram[(vec_index - 1) as usize] += 1;
     }
-    let new_histogram: Vec<u32> = histogram.drain(..(min as usize)).collect();
+    histogram.drain(..((min - 1) as usize));
     data_models::Histogram{
-        0: new_histogram
+        0: histogram
     }
 }
 
