@@ -41,9 +41,9 @@ fn calc_minmax_box(pixels: Vec<Rgba<u8>>) -> MinMaxBox {
         let green: u8 = pixel.0[1];
         let blue: u8 = pixel.0[2];
         // Replace with red if new min or max
-        minmax_replace(red, &mut rmin, &mut rmax);
-        minmax_replace(green, &mut gmin, &mut gmax);
-        minmax_replace(blue, &mut bmin, &mut bmax);
+        replace_minmax(red, &mut rmin, &mut rmax);
+        replace_minmax(green, &mut gmin, &mut gmax);
+        replace_minmax(blue, &mut bmin, &mut bmax);
     }
 
     // Generate the MinMaxBox
@@ -57,7 +57,7 @@ fn calc_minmax_box(pixels: Vec<Rgba<u8>>) -> MinMaxBox {
     }
 }
 
-fn minmax_replace(val: u8, min: &mut u8, max: &mut u8) -> () {
+fn replace_minmax(val: u8, min: &mut u8, max: &mut u8) -> () {
     if val < *min {
         *min = val;
     }
@@ -140,11 +140,11 @@ mod test_stats {
     }
 
     #[test]
-    fn test_minmax_replace() {
+    fn test_replace_minmax() {
         let mut min: u8 = 255;
         let mut max: u8 = 0;
         let val = 100;
-        minmax_replace(val, &mut min, &mut max);
+        replace_minmax(val, &mut min, &mut max);
 
         assert_eq!(val, min, "Logic Error: Minimum should have been replaced");
         assert_eq!(val, max, "Logic Error: Maximum should have been replaced");
