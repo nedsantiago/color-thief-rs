@@ -1,10 +1,9 @@
 mod img_io;
 mod stats;
 mod data_models;
-use crate::data_models::{ Histogram, FrequencyMap, MinMaxBox, ColorChannel };
+use crate::data_models::{ ColorChannel };
 use std::error::Error;
 use image::Rgba;
-use std::collections::HashMap;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -30,6 +29,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Calculate Frequency Map
     // Calculate Histogram per dimension
     let rhistogram = stats::calc_histogram(ColorChannel::Red, &pixels);
+    let ghistogram = stats::calc_histogram(ColorChannel::Green, &pixels);
+    let bhistogram = stats::calc_histogram(ColorChannel::Blue, &pixels);
+    println!("Red Histogram: {:?}", rhistogram.0);
+    println!("Green Histogram: {:?}", ghistogram.0);
+    println!("Blue Histogram: {:?}", bhistogram.0);
     // Check validity
     // Modified Median Cut Quantization
     // Calculate average color per MinMaxBox

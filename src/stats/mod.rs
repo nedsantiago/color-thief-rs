@@ -39,13 +39,14 @@ fn generate_histogram(color_ch: ColorChannel, pixels: &Vec<Rgba<u8>>) -> Histogr
 
         // Lenghten histogram when too short
         // (max + 1) accounts for index 32 hashing truncation
-        while histogram.len() < (max + 1) as usize {
+        while (histogram.len() < (max + 1) as usize) {
             // New values will be initialized to zero
             let count: u32 = 0;
             histogram.push(count);
         }
         // Increment value at index by one
-        histogram[(val) as usize] += 1;
+        histogram[val as usize] += 1;
+        println!("Upated Histogram@{} -> {}", val, histogram[(val) as usize]);
     }
     // Remove all values from zero to minimum value
     histogram.drain(..(min as usize));
