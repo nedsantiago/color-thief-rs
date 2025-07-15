@@ -25,17 +25,18 @@ fn calc_histogram(pixels: &Vec<Rgba<u8>>) -> Histogram {
         replace_minmax(vec_index, &mut min, &mut max);
 
         // Lenghten histogram when too short
-        while histogram.len() < max as usize {
+        while histogram.len() < (max + 1) as usize {
             // New values will be initialized to zero
             let count: u32 = 0;
             histogram.push(count);
+            dbg!(histogram.len());
         }
         println!("Histogram: {:?}", histogram);
         // Increment value at index by one
-        histogram[(vec_index - 1) as usize] += 1;
+        histogram[(vec_index) as usize] += 1;
     }
     // Remove the all values from zero to minimum value
-    histogram.drain(..((min - 1) as usize));
+    histogram.drain(..(min as usize));
     data_models::Histogram{
         0: histogram
     }
