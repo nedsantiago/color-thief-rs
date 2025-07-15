@@ -4,7 +4,7 @@ use crate::data_models::FrequencyMap;
 use crate::data_models::MinMaxBox;
 
 
-fn calc_histogram(data: Vec<Rgba<u8>>) -> Histogram {
+fn calc_histogram(pixels: Vec<Rgba<u8>>) -> Histogram {
     Histogram(
         vec![
             1, 1, 1, 1, 1,
@@ -13,7 +13,7 @@ fn calc_histogram(data: Vec<Rgba<u8>>) -> Histogram {
     )
 }
 
-fn calc_frequency_map(data: Vec<Rgba<u8>>) -> FrequencyMap {
+fn calc_frequency_map(pixels: Vec<Rgba<u8>>) -> FrequencyMap {
     FrequencyMap(
         HashMap::from([
             (32767, 1), (31710, 1),
@@ -25,14 +25,39 @@ fn calc_frequency_map(data: Vec<Rgba<u8>>) -> FrequencyMap {
     )
 }
 
-fn calc_minmax_box(data: Vec<Rgba<u8>>) -> MinMaxBox {
+fn calc_minmax_box(pixels: Vec<Rgba<u8>>) -> MinMaxBox {
+    // Initialize to first value
+    let first_pixel: Rgba<u8> = pixels[0];
+    let mut rmin: u8 = first_pixel.0[0];
+    let mut rmax: u8 = first_pixel.0[0];
+    let mut gmin: u8 = first_pixel.0[1];
+    let mut gmax: u8 = first_pixel.0[1];
+    let mut bmin: u8 = first_pixel.0[2];
+    let mut bmax: u8 = first_pixel.0[2];
+    for pixel in pixels {
+        let red: u8 = pixel.0[0];
+        let green: u8 = pixel.0[1];
+        let blue: u8 = pixel.0[2];
+        // Replace with red if new min or max
+        minmax_replace(red, &mut rmin, &mut rmax);
+        minmax_replace(green, &mut gmin, &mut gmax);
+        minmax_replace(blue, &mut bmin, &mut bmax);
+    }
     MinMaxBox {
-        rmin: 0,
-        rmax: 31,
-        gmin: 0,
-        gmax: 31,
-        bmin: 0,
-        bmax: 30,
+        rmin: rmin,
+        rmax: rmax,
+        gmin: gmin,
+        gmax: gmax,
+        bmin: bmin,
+        bmax: bmax,
+    }
+}
+
+fn minmax_replace(val: u8, min: &mut u8, max: &mut u8) -> () {
+    if val < *min {
+        *min = val;
+    } else if val > *max {
+        *max = val;
     }
 }
 
@@ -93,11 +118,11 @@ mod test_stats {
         ];
         let found = calc_minmax_box(input);
         let expected = MinMaxBox {
-            rmin: 0,
+            rmin: 22,
             rmax: 31,
-            gmin: 0,
+            gmin: 22,
             gmax: 31,
-            bmin: 0,
+            bmin: 22,
             bmax: 31,
         };
     
