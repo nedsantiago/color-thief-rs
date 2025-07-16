@@ -1,7 +1,7 @@
 # [WIP] Color Thief with Rust
 
 ![GitHub Actions Build Status](https://github.com/nedsantiago/color-thief-rs/actions/workflows/rust.yml/badge.svg)
-[![License: MIT](https://img.shields.io/badge/License-MPL_2.0-red.svg)](https://www.mozilla.org/en-US/MPL/2.0/)
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-red.svg)](https://www.mozilla.org/en-US/MPL/2.0/)
 
 **This project is a work in progress.**
 
@@ -53,7 +53,7 @@ classDiagram
     RgbaImage --> Rgba: uses
     DimHistograms --> Histogram: uses
 ```
-- `calc_minmax_freq_histo` will also bin the pixels based through pixel shifting.
+
 - Between `load_img` and `calc_minmax_freq_histo`, algorithm should check for pixel validity.
 - `histogram` may need `inverse_histogram` and `volume_count_histogram` counterparts
 - Need more details for `calc_nearest_colors`, `calc_average_colors`, `twophase_split`, and `iterative_split`
