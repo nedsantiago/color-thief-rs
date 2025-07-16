@@ -16,8 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // NOTE FUTURE: Add Failure mode when Image too large
     // Make an array of rgba filtering out half alphas
     // Filter pixels
-    let pixels: Vec<Rgba<u8>> = img
-        .pixels()
+    let pixels: Vec<Rgba<u8>> = img.pixels()
         // Filter out half-transparent pixels
         .filter(|&pixel| {
             pixel[3] > 125
@@ -35,12 +34,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Calculate Frequency Map
 
     // Calculate Histogram per dimension
-    let rhistogram = stats::calc_histogram(ColorChannel::Red, &pixels);
-    let ghistogram = stats::calc_histogram(ColorChannel::Green, &pixels);
-    let bhistogram = stats::calc_histogram(ColorChannel::Blue, &pixels);
-    println!("Red Histogram: {:?}", rhistogram.0);
-    println!("Green Histogram: {:?}", ghistogram.0);
-    println!("Blue Histogram: {:?}", bhistogram.0);
+    let dim_histograms = stats::calc_dim_histograms(&pixels);
+    println!("Red Histogram: {:?}", dim_histograms.0[0].0);
+    println!("Green Histogram: {:?}", dim_histograms.0[1].0);
+    println!("Blue Histogram: {:?}", dim_histograms.0[2].0);
 
     // Check validity
 

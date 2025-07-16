@@ -3,6 +3,8 @@ use std::collections::HashMap;
 
 pub struct Histogram(pub Vec<u32>);
 
+pub struct DimHistograms(pub [Histogram; 3]);
+
 pub struct FrequencyMap(pub HashMap<u32,u32>);
 
 pub struct MinMaxBox {

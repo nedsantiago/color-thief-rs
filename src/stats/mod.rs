@@ -1,7 +1,20 @@
 use image::Rgba;
 use std::collections::HashMap;
-use crate::data_models::{ Histogram, FrequencyMap, MinMaxBox, ColorChannel };
+use crate::data_models::{
+    Histogram, DimHistograms, FrequencyMap, MinMaxBox, ColorChannel
+};
 
+
+pub fn calc_dim_histograms(pixels: &Vec<Rgba<u8>>) -> DimHistograms {
+    // NOTE this can be a good place to do multithreading
+    let rhistogram = calc_histogram(ColorChannel::Red, &pixels);
+    let ghistogram = calc_histogram(ColorChannel::Green, &pixels);
+    let bhistogram = calc_histogram(ColorChannel::Blue, &pixels);
+
+    DimHistograms {
+        0: [rhistogram, ghistogram, bhistogram]
+    }
+}
 
 pub fn calc_histogram(
     color_ch: ColorChannel, pixels: &Vec<Rgba<u8>>) -> Histogram {

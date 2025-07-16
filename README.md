@@ -37,6 +37,9 @@ classDiagram
     class FrequencyMap {
         +HashMap[u32,u32] 0
     }
+    class DimHistograms {
+        +Vec[Histogram, 3] 0
+    }
     class Histogram {
         +Vec[u32, 4] 0
     }
@@ -48,6 +51,7 @@ classDiagram
     }
     BoxQueue --> MinMaxBox: uses
     RgbaImage --> Rgba: uses
+    DimHistograms --> Histogram: uses
 ```
 - `calc_minmax_freq_histo` will also bin the pixels based through pixel shifting.
 - Between `load_img` and `calc_minmax_freq_histo`, algorithm should check for pixel validity.
