@@ -69,12 +69,12 @@ flowchart TD;
     load_img --> rgba_img[/img: RgbaImage/]
     rgba_img --> calc_minmax_box[calc_minmax_box]
     rgba_img --> calc_frequency_map[calc_frequency_map]
-    rgba_img --> calc_histogram[calc_histogram]
+    rgba_img --> calc_dim_histograms[calc_dim_histograms]
     calc_minmax_box --> init_minmax_box[/init_minmax_box: MinMaxBox/]
     calc_frequency_map --> frequency_map[/frequency_map: FrequencyMap/]
-    calc_histogram --> histogram[/histogram: Histogram/]
+    calc_dim_histograms --> dim_histograms[/dim_histograms: DimHistograms/]
     init_minmax_box --> iterative_split[iterative_split]
-    histogram --> iterative_split
+    dim_histograms --> iterative_split
     iterative_split --> boxes_itersplit[/boxes_itersplit: BoxQueue/]
     boxes_itersplit --> two_phase_split[two_phase_split]
     two_phase_split --> boxes_two_phase[/boxes_two_phase: BoxQueue/]
