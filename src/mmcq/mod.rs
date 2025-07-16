@@ -4,19 +4,54 @@ use crate::data_models::{
 use image::{ Rgba };
 
 
-pub fn iterative_split(dim_histograms: DimHistograms, minmax_box: MinMaxBox) -> BoxQueue {
-    println!("Begin Iterative Split");
-
+pub fn create_box_queue(minmax_box: MinMaxBox) -> BoxQueue {
     // Put MinMaxBox in a BoxQueue
     let mut init_box_queue: Vec<MinMaxBox> = Vec::new();
     init_box_queue.push(minmax_box);
     BoxQueue {
         0: init_box_queue
     }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    use crate::data_models::{ BoxQueue, MinMaxBox };
+    use image::Rgba;
+
+    #[test]
+    fn test_create_box_queue() {
+        let input = MinMaxBox {
+            rmin: 0,
+            rmax: 31,
+            gmin: 0,
+            gmax: 31,
+            bmin: 0,
+            bmax: 31,
+        };
+        let found = create_box_queue(input);
+        let expected = BoxQueue {
+            0: vec![MinMaxBox{
+                rmin: 0,
+                rmax: 31,
+                gmin: 0,
+                gmax: 31,
+                bmin: 0,
+                bmax: 31,
+            }],
+        };
+        assert_eq!(expected.0[0], found.0[0], "Logic Error:");
+    }
+}
+
+pub fn iterative_split(dim_histograms: DimHistograms, box_queue: BoxQueue) -> BoxQueue {
     // Get highest MinMaxBox from a count-sorted vector
     // Get median
     // Split Box
     // Until max iterations reached
+
+    box_queue
 }
 
 fn two_phase_split(dim_histograms: DimHistograms, minmax_boxes: Vec<MinMaxBox>) {

@@ -30,6 +30,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Calculate Initial MinMaxBox
     let init_minmax_box: MinMaxBox = stats::calc_minmax_box(&pixels);
     println!("minmax: {}", init_minmax_box);
+    // Create a Box Queue
+    let init_box_queue: BoxQueue = mmcq::create_box_queue(init_minmax_box);
 
     // Calculate Frequency Map
 
@@ -41,8 +43,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Check validity
 
+
     // Modified Median Cut Quantization
-    let box_queue_itersplit: BoxQueue = mmcq::iterative_split(dim_histograms, init_minmax_box);
+    let box_queue_itersplit: BoxQueue = mmcq::iterative_split(dim_histograms, init_box_queue);
     println!("After Iterative Split: {}", box_queue_itersplit);
 
     // Calculate average color per MinMaxBox
