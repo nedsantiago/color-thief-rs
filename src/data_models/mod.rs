@@ -30,6 +30,7 @@ impl std::fmt::Display for MinMaxBox {
     }
 }
 
+#[derive(Debug)]
 pub struct BoxQueue(pub Vec<MinMaxBox>);
 
 impl std::fmt::Display for BoxQueue {

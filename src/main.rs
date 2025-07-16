@@ -46,7 +46,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Modified Median Cut Quantization
     let box_queue_itersplit: BoxQueue = mmcq::iterative_split(dim_histograms, init_box_queue);
-    println!("After Iterative Split: {}", box_queue_itersplit);
+    println!("After Iterative Split: {:?}", box_queue_itersplit);
 
     // Calculate average color per MinMaxBox
 
