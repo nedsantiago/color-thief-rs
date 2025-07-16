@@ -1,12 +1,18 @@
 use std::vec::Vec;
-use crate::data_models::{ ColorChannel, MinMaxBox, Histogram, DimHistograms };
+use crate::data_models::{
+    ColorChannel, MinMaxBox, Histogram, DimHistograms, BoxQueue };
 use image::{ Rgba };
 
 
-fn iterative_split(dim_histograms: DimHistograms, minmax_box: MinMaxBox) {
+pub fn iterative_split(dim_histograms: DimHistograms, minmax_box: MinMaxBox) -> BoxQueue {
     println!("Begin Iterative Split");
-    // Put MinMaxBox in a BoxQueue
 
+    // Put MinMaxBox in a BoxQueue
+    let mut init_box_queue: Vec<MinMaxBox> = Vec::new();
+    init_box_queue.push(minmax_box);
+    BoxQueue {
+        0: init_box_queue
+    }
     // Get highest MinMaxBox from a count-sorted vector
     // Get median
     // Split Box

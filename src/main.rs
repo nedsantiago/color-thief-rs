@@ -2,7 +2,7 @@ mod data_models;
 mod img_io;
 mod stats;
 mod mmcq;
-use crate::data_models::{ ColorChannel, MinMaxBox };
+use crate::data_models::{ ColorChannel, MinMaxBox, BoxQueue };
 use crate::mmcq::MMCQ;
 use std::error::Error;
 use image::Rgba;
@@ -28,8 +28,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Check validity
 
     // Calculate Initial MinMaxBox
-    let minmax_box: MinMaxBox = stats::calc_minmax_box(&pixels);
-    println!("minmax: {}", minmax_box);
+    let init_minmax_box: MinMaxBox = stats::calc_minmax_box(&pixels);
+    println!("minmax: {}", init_minmax_box);
 
     // Calculate Frequency Map
 
@@ -42,6 +42,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Check validity
 
     // Modified Median Cut Quantization
+    let box_queue_itersplit: BoxQueue = mmcq::iterative_split(dim_histograms, init_minmax_box);
+    println!("After Iterative Split: {}", box_queue_itersplit);
 
     // Calculate average color per MinMaxBox
 

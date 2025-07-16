@@ -30,6 +30,16 @@ impl std::fmt::Display for MinMaxBox {
 
 pub struct BoxQueue(pub Vec<MinMaxBox>);
 
+impl std::fmt::Display for BoxQueue {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.0[0],
+        )
+    }
+}
+
 pub enum ColorChannel {
     Red = 0,
     Green = 1,
