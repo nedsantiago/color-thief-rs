@@ -14,24 +14,64 @@ pub fn create_box_queue(minmax_box: MinMaxBox) -> BoxQueue {
     }
 }
 
-pub fn iterative_split(dim_histograms: DimHistograms, box_queue: BoxQueue) -> BoxQueue {
+pub fn iterative_split(dim_histograms: DimHistograms, mut box_queue: BoxQueue) -> BoxQueue {
     // Get highest MinMaxBox from a count-sorted vector
-    // Get median
-    // Split Box
-    // Until max iterations reached
+    let minmax_box: MinMaxBox = match box_queue.0.pop() {
+        Some(val) => val,
+        None => panic!("Iterative Split tried to access an empty Queue and failed."),
+    };
 
+    // Get longest range color channel
+    let red_range: u8 = minmax_box.rmax - minmax_box.rmin;
+    let green_range: u8 = minmax_box.gmax - minmax_box.gmin;
+    let blue_range: u8 = minmax_box.bmax - minmax_box.bmin;
+
+    let longest_channel: ColorChannel = if (red_range >= green_range
+            && red_range >= blue_range) {
+        ColorChannel::Red
+    } else if green_range > red_range && green_range > blue_range {
+        ColorChannel::Green
+    } else {
+        ColorChannel::Blue
+    };
+
+    // Split the largest MinMaxBox
+    let splitted_box: [MinMaxBox; 2] = cut_at_mmcqmedian(
+        &dim_histograms.0[longest_channel as usize], minmax_box
+    );
+
+    // Push new MinMaxBoxes back into BoxQueue
+    for mmbox in splitted_box {
+        box_queue.0.push(mmbox)
+    }
+    // Until max iterations reached
     box_queue
 }
 
-fn two_phase_split(dim_histograms: DimHistograms, minmax_boxes: Vec<MinMaxBox>) {
-    println!("Begin Two-Phase Split");
-    // Get highest MinMaxBox from a volume-count-sorted vector
+fn cut_at_mmcqmedian(histogram: &Histogram, minmax_box: MinMaxBox) -> [MinMaxBox; 2] {
     // Get median
     // Split Box
-    // Until max iterations reached
+    [
+        MinMaxBox {
+            rmin: minmax_box.rmin,
+            rmax: minmax_box.rmax,
+            gmin: minmax_box.gmin,
+            gmax: minmax_box.gmax,
+            bmin: minmax_box.bmin,
+            bmax: minmax_box.bmax,
+        },
+        MinMaxBox {
+            rmin: minmax_box.rmin,
+            rmax: minmax_box.rmax,
+            gmin: minmax_box.gmin,
+            gmax: minmax_box.gmax,
+            bmin: minmax_box.bmin,
+            bmax: minmax_box.bmax,
+        },
+    ]
 }
 
-fn get_median(histogram: Histogram, minmax_box: MinMaxBox) -> () {
+fn get_mmcqmedian(histogram: Histogram, minmax_box: MinMaxBox) -> () {
     // Find longest dimension in MinMaxBox (biggest range)
     // Cut the perpendicular to longest dimension
     // Create a cumulative histogram (may implement in main)
@@ -45,6 +85,16 @@ fn get_median(histogram: Histogram, minmax_box: MinMaxBox) -> () {
 fn split_box(minmax_box: MinMaxBox, split_val: u8) {
     // Create a left box
     // Create a right box
+}
+
+fn two_phase_split(dim_histograms: DimHistograms, minmax_boxes: Vec<MinMaxBox>) {
+    println!("Begin Two-Phase Split");
+    // Get highest MinMaxBox from a volume-count-sorted vector
+    // Get median Split Box
+    // Until max iterations reached
+}
+
+fn sort_box_queue(box_queue: BoxQueue) {
 }
 
 /// Modified Median Cut Quantization (MMCQ) encapsulates all the
@@ -91,7 +141,7 @@ impl MMCQ {
 }
 
 #[cfg(test)]
-mod test_MMCQ {
+mod test_mmcq {
     use super::*;
 
     use crate::data_models::{ BoxQueue, MinMaxBox };
@@ -119,6 +169,60 @@ mod test_MMCQ {
             }],
         };
         assert_eq!(expected.0[0], found.0[0], "Logic Error:");
+    }
+
+    #[ignore]
+    #[test]
+    fn test_iterative_split() {
+        let rhisto: Vec<u32> = vec![3, 3, 3, 3];
+        let ghisto: Vec<u32> = vec![3, 3, 1, 1, 1, 1, 0, 2];
+        let bhisto: Vec<u32> = vec![3, 1, 2, 3, 3];
+        let dim_histograms = DimHistograms {
+            0: [
+                Histogram {
+                    0: rhisto
+                },
+                Histogram {
+                    0: ghisto
+                },
+                Histogram {
+                    0: bhisto
+                },
+            ]
+        };
+        let minmax_box = MinMaxBox {
+            rmin: 0,
+            rmax: 3,
+            gmin: 11,
+            gmax: 18,
+            bmin: 0,
+            bmax: 4,
+        };
+        let box_queue = BoxQueue {
+            0: vec![minmax_box]
+        };
+        let found = iterative_split(dim_histograms, box_queue);
+        let expected = BoxQueue {
+            0: vec![
+                MinMaxBox {
+                    rmin: 0,
+                    rmax: 3,
+                    gmin: 11,
+                    gmax: 14,
+                    bmin: 0,
+                    bmax: 4,
+                },
+                MinMaxBox {
+                    rmin: 0,
+                    rmax: 3,
+                    gmin: 15,
+                    gmax: 18,
+                    bmin: 0,
+                    bmax: 4,
+                },
+            ]
+        };;
+        assert_eq!(expected, found, "Logic Error:");
     }
 
     #[test]
