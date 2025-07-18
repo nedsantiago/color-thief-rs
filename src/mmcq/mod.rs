@@ -1,4 +1,5 @@
 use std::vec::Vec;
+use std::cmp;
 use crate::data_models::{
     ColorChannel, MinMaxBox, Histogram, DimHistograms, BoxQueue
 };
@@ -70,42 +71,53 @@ fn cut_at_mmcqmedian(histogram: &Histogram, minmax_box: MinMaxBox) -> [MinMaxBox
             bmax: minmax_box.bmax,
         },
     ]
+    // After you get median, split the MinMaxBox
 }
 
-fn calc_mmcqmedian(histogram: Histogram, min: u8, max: u8) -> u8 {
+fn calc_mmcqmedian(histogram: Histogram, min: u8, max: u8, total: u32) -> u8 {
     // Calculate inverse cumulative histogram
-    // NOTE failure when no median is found
-    // Find the median (NOTE get_rough_median func)
-    // Adjust the median to a bin with a count move median
-    // After you get median, split the MinMaxBox
-
     // Create a cumulative histogram (may implement in main)
-    let mut cumhisto: Vec<u32> = Vec::new();
+    let median_target: u32 = total / 2;
     let mut cumsum: u32 = 0;
-    for i in 0..histogram.0.len() {
-        let count: u32 = histogram.0[i];
-        cumsum += count;
-        cumhisto.push(cumsum);
-        println!("{:?}, {}", cumhisto, count);
-    }
-    let total: u32 = cumsum;
-    cumsum = 0;
     let mut median: u8 = 0;
-    let mut i: usize = 0;
-    let mut is_median_found: bool = false;
-    while i < histogram.0.len() && !is_median_found {
-        cumsum += histogram.0[i];
-        println!("currsum:{} total:{}, i:{}", cumsum, total / 2, i);
-        if cumsum > total / 2 {
+    // Find the median based on count (true median)
+    let mut cumsum_histogram: Vec<u32> = Vec::new();
+    for (i, &count) in histogram.0.iter().enumerate() {
+        cumsum += count;
+        cumsum_histogram.push(cumsum);
+        if cumsum > median_target {
             median = i as u8;
-            is_median_found = true;
+            break;
         }
-        i += 1;
     }
-    for i in 0..histogram.0.len() {
-        let count: u32 = histogram.0[i];
+    median += min;
+    dbg!(median);
+
+    // Adjust the median to the larger cut
+    let lower_range: u8 = median - min;
+    let upper_range: u8 = max - median;
+    dbg!(lower_range);
+    dbg!(upper_range);
+    // If lower half is larger or equivalent to upper half
+    if lower_range <= upper_range {
+        // Adjust median (NOTE what if median was at maximum value?)
+        // NOTE color-thief-py rounds a float here thus modulo was used
+        median = cmp::min(max - 1, median + (upper_range / 2) + upper_range % 2);
+    } else {
+        dbg!(median - 1 - lower_range / 2);
+        median = cmp::max(min, median - 1 - (lower_range / 2 + lower_range % 2));
     }
-    median + min
+    // Adjust the median to a bin with a count
+    dbg!(cumsum_histogram[median as usize]);
+    while cumsum_histogram[median as usize] == 0 {
+        median += 1;
+    }
+    // If walked median is the total, move back when possible
+    dbg!((total - cumsum_histogram[median as usize] == 0) && cumsum_histogram[(median - 1) as usize] != 0);
+    while (total - cumsum_histogram[median as usize] == 0) && cumsum_histogram[(median - 1) as usize] != 0 {
+        median -= 1;
+    }
+    median
 }
 
 fn split_box(minmax_box: MinMaxBox, split_val: u8) {
@@ -270,9 +282,11 @@ mod test_mmcq {
             },
             2 as u8,
             30 as u8,
+            12 as u32,
         );
-        let found = calc_mmcqmedian(input.0, input.1, input.2);
-        let expected = 17;
+        let found = calc_mmcqmedian(input.0, input.1, input.2, input.3);
+        // let expected = 17;
+        let expected = 8;
         assert_eq!(expected, found, "Logic Error:");
     }
 
