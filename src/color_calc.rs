@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::vec::Vec;
 use image::Rgba;
+
+
 /// Modified Median Cut Quantization (MMCQ) encapsulates all the
 /// functionality and constants for conducting the algorithm.
 /// The algorithm uses binary operations. It removes smaller-
@@ -323,25 +325,6 @@ mod test_MMCQ {
         assert_eq!(resulted, expected, "\nEXPECTED\n{}\nRESULTED\n{}", expected, resulted);
     }
 
-    // fn test_get_frequency_map() {
-    //     let pixels = vec![
-    //         Rgba{r:255,g:255,b:255}, Rgba{r:247,g:247,b:247},
-    //         Rgba{r:239,g:239,b:239}, Rgba{r:231,g:231,b:231},
-    //         Rgba{r:223,g:223,b:223}, Rgba{r:215,g:215,b:215},
-    //         Rgba{r:207,g:207,b:207}, Rgba{r:199,g:199,b:199},
-    //         Rgba{r:191,g:191,b:191}, Rgba{r:183,g:183,b:183},
-    //     ];
-    //     let input = pixels;
-    //     let resulted = MMCQ::get_frequency_map(input);
-    //     let expected = HashMap::from([
-    //         (32767, 1), (31710, 1),
-    //         (30653, 1), (28539, 1),
-    //         (28539, 1), (27482, 1),
-    //         (26425, 1), (24311, 1),
-    //         (23254, 1), (22197, 1),
-    //     ]);
-    //     assert_eq!(resulted, expected, "\nEXPECTED\n{:?}\nRESULTED\n{:?}", expected, resulted);
-    // }
 }
 
 pub struct ColorSpace {
