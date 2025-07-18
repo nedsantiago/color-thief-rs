@@ -13,8 +13,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let img_path = "./tests/data/12colors.png";
     let img: image::RgbaImage = img_io::open_img_rgba(img_path)?;
     
-    // NOTE FUTURE: Add Failure mode when Image too large
-    // Make an array of rgba filtering out half alphas
     // Filter pixels
     let pixels: Vec<Rgba<u8>> = img.pixels()
         // Filter out half-transparent pixels
@@ -24,6 +22,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         // Bin using MMCQ bit shift
         .map(|&pixel| MMCQ::bin_pixel(pixel))
         .collect();
+
+    let total_pixels = pixels.len();
+    if total_pixels > u32::MAX as usize {
+        // Conduct a failure mode here
+        panic!("Image was too large!");
+    }
+    println!("Total Pixels: {}", total_pixels);
 
     // Check validity
 
