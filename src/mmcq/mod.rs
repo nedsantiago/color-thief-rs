@@ -21,7 +21,7 @@ pub fn iterative_split(dim_histograms: DimHistograms, mut box_queue: BoxQueue) -
         None => panic!("Iterative Split tried to access an empty Queue and failed."),
     };
 
-    // Get longest range color channel
+    // Find longest dimension in MinMaxBox (biggest range)
     let red_range: u8 = minmax_box.rmax - minmax_box.rmin;
     let green_range: u8 = minmax_box.gmax - minmax_box.gmin;
     let blue_range: u8 = minmax_box.bmax - minmax_box.bmin;
@@ -51,6 +51,7 @@ pub fn iterative_split(dim_histograms: DimHistograms, mut box_queue: BoxQueue) -
 fn cut_at_mmcqmedian(histogram: &Histogram, minmax_box: MinMaxBox) -> [MinMaxBox; 2] {
     // Get median
     // Split Box
+    // Cut the perpendicular to longest dimension
     [
         MinMaxBox {
             rmin: minmax_box.rmin,
@@ -71,15 +72,40 @@ fn cut_at_mmcqmedian(histogram: &Histogram, minmax_box: MinMaxBox) -> [MinMaxBox
     ]
 }
 
-fn get_mmcqmedian(histogram: Histogram, minmax_box: MinMaxBox) -> () {
-    // Find longest dimension in MinMaxBox (biggest range)
-    // Cut the perpendicular to longest dimension
-    // Create a cumulative histogram (may implement in main)
+fn calc_mmcqmedian(histogram: Histogram, min: u8, max: u8) -> u8 {
     // Calculate inverse cumulative histogram
     // NOTE failure when no median is found
     // Find the median (NOTE get_rough_median func)
     // Adjust the median to a bin with a count move median
     // After you get median, split the MinMaxBox
+
+    // Create a cumulative histogram (may implement in main)
+    let mut cumhisto: Vec<u32> = Vec::new();
+    let mut cumsum: u32 = 0;
+    for i in 0..histogram.0.len() {
+        let count: u32 = histogram.0[i];
+        cumsum += count;
+        cumhisto.push(cumsum);
+        println!("{:?}, {}", cumhisto, count);
+    }
+    let total: u32 = cumsum;
+    cumsum = 0;
+    let mut median: u8 = 0;
+    let mut i: usize = 0;
+    let mut is_median_found: bool = false;
+    while i < histogram.0.len() && !is_median_found {
+        cumsum += histogram.0[i];
+        println!("currsum:{} total:{}, i:{}", cumsum, total / 2, i);
+        if cumsum > total / 2 {
+            median = i as u8;
+            is_median_found = true;
+        }
+        i += 1;
+    }
+    for i in 0..histogram.0.len() {
+        let count: u32 = histogram.0[i];
+    }
+    median + min
 }
 
 fn split_box(minmax_box: MinMaxBox, split_val: u8) {
@@ -221,7 +247,32 @@ mod test_mmcq {
                     bmax: 4,
                 },
             ]
-        };;
+        };
+        assert_eq!(expected, found, "Logic Error:");
+    }
+
+    // MinMaxBox {
+    //     rmin: 2,
+    //     rmax: 30,
+    //     gmin: 1,
+    //     gmax: 29,
+    //     bmin: 0,
+    //     bmax: 28,
+    // }
+    #[test]
+    fn test_calc_mmcqmedian() {
+        let input = (
+            Histogram {
+                0: [
+                    1, 0, 1, 0, 0, 1, 0, 1, 0,
+                    0, 1, 0, 0, 1, 0, 1, 0, 0,
+                    1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1].to_vec()
+            },
+            2 as u8,
+            30 as u8,
+        );
+        let found = calc_mmcqmedian(input.0, input.1, input.2);
+        let expected = 17;
         assert_eq!(expected, found, "Logic Error:");
     }
 
