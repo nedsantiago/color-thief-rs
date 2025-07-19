@@ -210,7 +210,7 @@ mod test_stats {
     fn test_calc_frequency_map1() {
         let input = vec![
             Rgba::from([31 as u8; 4]), Rgba::from([30 as u8; 4]),
-            Rgba::from([29 as u8; 4]), Rgba::from([28 as u8; 4]),
+            Rgba::from([29 as u8; 4]), Rgba::from([27 as u8; 4]),
             Rgba::from([27 as u8; 4]), Rgba::from([26 as u8; 4]),
             Rgba::from([25 as u8; 4]), Rgba::from([24 as u8; 4]),
             Rgba::from([23 as u8; 4]), Rgba::from([22 as u8; 4]),
@@ -220,10 +220,10 @@ mod test_stats {
         let expected = FrequencyMap(
             HashMap::from([
                 (32767, 1), (31710, 1),
-                (30653, 1), (28539, 1),
-                (28539, 1), (27482, 1),
-                (26425, 1), (24311, 1),
-                (23254, 1), (22197, 1),
+                (30653, 1),
+                (28539, 2), (27482, 1),
+                (26425, 1), (25368, 1),
+                (24311, 1), (23254, 1),
             ])
         ).0;
         assert_eq!(expected, found, "Logic Error:");
