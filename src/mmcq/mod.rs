@@ -165,6 +165,13 @@ impl MMCQ {
         r_lshift + g_lshift + b_lshift
     }
 
+    pub fn hash_pixel(pixel: &Rgba<u8>) -> u32 {
+        let r = pixel.0[0];
+        let g = pixel.0[1];
+        let b = pixel.0[2];
+        MMCQ::hash_rgb(r, g, b)
+    }
+
     pub fn bin_pixel(pixel: Rgba<u8>) -> Rgba<u8> {
         let pixel = pixel.0;
 

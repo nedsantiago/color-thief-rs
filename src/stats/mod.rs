@@ -124,6 +124,7 @@ fn replace_minmax(val: u8, min: &mut u8, max: &mut u8) -> () {
 mod test_stats {
     use super::*;
     use image::Rgba;
+    use crate::mmcq::MMCQ;
 
     #[test]
     fn test_calc_histogram0() {
@@ -181,7 +182,7 @@ mod test_stats {
     }
 
     #[test]
-    fn test_calc_frequency_map() {
+    fn test_calc_frequency_map0() {
         let input = vec![
             Rgba::from([31 as u8; 4]), Rgba::from([30 as u8; 4]),
             Rgba::from([29 as u8; 4]), Rgba::from([28 as u8; 4]),
@@ -200,6 +201,29 @@ mod test_stats {
                 (27 * 3, 1), (26 * 3, 1),
                 (25 * 3, 1), (24 * 3, 1),
                 (23 * 3, 1), (22 * 3, 1),
+            ])
+        ).0;
+        assert_eq!(expected, found, "Logic Error:");
+    }
+
+    #[test]
+    fn test_calc_frequency_map1() {
+        let input = vec![
+            Rgba::from([31 as u8; 4]), Rgba::from([30 as u8; 4]),
+            Rgba::from([29 as u8; 4]), Rgba::from([28 as u8; 4]),
+            Rgba::from([27 as u8; 4]), Rgba::from([26 as u8; 4]),
+            Rgba::from([25 as u8; 4]), Rgba::from([24 as u8; 4]),
+            Rgba::from([23 as u8; 4]), Rgba::from([22 as u8; 4]),
+        ];
+
+        let found = calc_frequency_map(&input, &MMCQ::hash_pixel).0;
+        let expected = FrequencyMap(
+            HashMap::from([
+                (32767, 1), (31710, 1),
+                (30653, 1), (28539, 1),
+                (28539, 1), (27482, 1),
+                (26425, 1), (24311, 1),
+                (23254, 1), (22197, 1),
             ])
         ).0;
         assert_eq!(expected, found, "Logic Error:");
