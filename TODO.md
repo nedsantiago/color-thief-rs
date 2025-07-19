@@ -11,7 +11,7 @@
 
 ## Notes
 
-- Will separate `MinMaxBox` from `MMCQ`. `MMCQ` holds functions and methods that transform the data model `MinMaxBox`.
+- ~~Will separate `MinMaxBox` from `MMCQ`. `MMCQ` holds functions and methods that transform the data model `MinMaxBox`.~~ Created the MinMaxBox separately from MMCQ as a data model
 - ~~Considering a better data model for pixels. It would be best to pass and calculate pixels as a set or vector instead of repeating operations thrice at different parts of the algorithm.~~ May now attempt to use the tuple style of Image Library.
 - ~~In `color-thief-py`, `VBox.count()` can be optimized I by looping through the dictionary instead of the entire color space.~~ Looping through a hashmap is *slower* than looping through a vector or array.
 - ~~Current architecture can be improved. Exploring algorithms that can encapsulate the creation of the `ColorSpace` / `VBox` structs. Suspect that the `histo`-generating function and the `ColorSpace` algorithm should be used in a single function. Perhaps `color_calc` can be composed of functions declared somewhere else. Especially important since a frequency calculator seems like a valuable algorithm to have for future projects.~~ Will indeed be restructuring the code to separate have a single `calc_minmax_freq_histo` to encapsulate calculating for both `Histogram`, `FrequencyMap`, and `MinMaxBox`

@@ -66,16 +66,16 @@ fn generate_histogram(color_ch: ColorChannel, pixels: &Vec<Rgba<u8>>) -> Histogr
     }
 }
 
-fn calc_frequency_map(pixels: &Vec<Rgba<u8>>) -> FrequencyMap {
-    FrequencyMap(
-        HashMap::from([
-            (32767, 1), (31710, 1),
-            (30653, 1), (28539, 1),
-            (28539, 1), (27482, 1),
-            (26425, 1), (24311, 1),
-            (23254, 1), (22197, 2),
-        ])
-    )
+fn calc_frequency_map(pixels: &Vec<Rgba<u8>>, hash_algo: &dyn Fn(&Rgba<u8>) -> u32) -> FrequencyMap {
+    let mut frequency_map: HashMap<u32, u32> = HashMap::new();
+    for pixel in pixels {
+        let hash: u32 = hash_algo(pixel);
+        let count = frequency_map.entry(hash).or_insert(0);
+        *count += 1;
+    }
+    FrequencyMap{
+        0: frequency_map
+    }
 }
 
 pub fn calc_minmax_box(pixels: &Vec<Rgba<u8>>) -> MinMaxBox {
@@ -123,6 +123,7 @@ fn replace_minmax(val: u8, min: &mut u8, max: &mut u8) -> () {
 #[cfg(test)]
 mod test_stats {
     use super::*;
+    use image::Rgba;
 
     #[test]
     fn test_calc_histogram0() {
@@ -179,7 +180,6 @@ mod test_stats {
         assert_eq!(expected, found, "Logic Error:");
     }
 
-    #[ignore]
     #[test]
     fn test_calc_frequency_map() {
         let input = vec![
@@ -189,14 +189,17 @@ mod test_stats {
             Rgba::from([25 as u8; 4]), Rgba::from([24 as u8; 4]),
             Rgba::from([23 as u8; 4]), Rgba::from([22 as u8; 4]),
         ];
-        let found = calc_frequency_map(&input).0;
+        fn hash_algo(pixel: &Rgba<u8>) -> u32 {
+            (pixel.0[0] + pixel.0[1] + pixel.0[2]) as u32
+        }
+        let found = calc_frequency_map(&input, &hash_algo).0;
         let expected = FrequencyMap(
             HashMap::from([
-                (32767, 1), (31710, 1),
-                (30653, 1), (28539, 1),
-                (28539, 1), (27482, 1),
-                (26425, 1), (24311, 1),
-                (23254, 1), (22197, 1),
+                (31 * 3, 1), (30 * 3, 1),
+                (29 * 3, 1), (28 * 3, 1),
+                (27 * 3, 1), (26 * 3, 1),
+                (25 * 3, 1), (24 * 3, 1),
+                (23 * 3, 1), (22 * 3, 1),
             ])
         ).0;
         assert_eq!(expected, found, "Logic Error:");
