@@ -76,7 +76,7 @@ flowchart TD;
     init_minmax_box --> create_box_queue[create_box_queue]
     create_box_queue --> init_box_queue[/init_box_queue: BoxQueue/]
     init_box_queue --> iterative_split[iterative_split]
-    dim_histograms --> iterative_split
+    frequency_map --> iterative_split
     iterative_split --> boxes_itersplit[/boxes_itersplit: BoxQueue/]
     boxes_itersplit --> two_phase_split[two_phase_split]
     two_phase_split --> boxes_two_phase[/boxes_two_phase: BoxQueue/]
