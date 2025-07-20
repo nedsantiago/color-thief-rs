@@ -66,7 +66,7 @@ fn generate_histogram(color_ch: ColorChannel, pixels: &Vec<Rgba<u8>>) -> Histogr
     }
 }
 
-fn calc_frequency_map(pixels: &Vec<Rgba<u8>>, hash_algo: &dyn Fn(&Rgba<u8>) -> u32) -> FrequencyMap {
+pub fn calc_frequency_map(pixels: &Vec<Rgba<u8>>, hash_algo: &dyn Fn(&Rgba<u8>) -> u32) -> FrequencyMap {
     let mut frequency_map: HashMap<u32, u32> = HashMap::new();
     for pixel in pixels {
         let hash: u32 = hash_algo(pixel);

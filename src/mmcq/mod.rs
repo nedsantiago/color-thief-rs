@@ -1,7 +1,8 @@
 use std::vec::Vec;
 use std::cmp;
 use crate::data_models::{
-    ColorChannel, MinMaxBox, Histogram, DimHistograms, BoxQueue
+    ColorChannel, MinMaxBox, Histogram,
+    DimHistograms, BoxQueue, FrequencyMap
 };
 use image::Rgba;
 
@@ -15,7 +16,7 @@ pub fn create_box_queue(minmax_box: MinMaxBox) -> BoxQueue {
     }
 }
 
-pub fn iterative_split(dim_histograms: DimHistograms, mut box_queue: BoxQueue) -> BoxQueue {
+pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> BoxQueue {
     // Get highest MinMaxBox from a count-sorted vector
     let minmax_box: MinMaxBox = match box_queue.0.pop() {
         Some(val) => val,
@@ -38,7 +39,7 @@ pub fn iterative_split(dim_histograms: DimHistograms, mut box_queue: BoxQueue) -
 
     // Split the largest MinMaxBox
     let splitted_box: [MinMaxBox; 2] = cut_at_mmcqmedian(
-        &dim_histograms.0[longest_channel as usize], minmax_box
+        &frequency_map, minmax_box
     );
 
     // Push new MinMaxBoxes back into BoxQueue
@@ -49,7 +50,7 @@ pub fn iterative_split(dim_histograms: DimHistograms, mut box_queue: BoxQueue) -
     box_queue
 }
 
-fn cut_at_mmcqmedian(histogram: &Histogram, minmax_box: MinMaxBox) -> [MinMaxBox; 2] {
+fn cut_at_mmcqmedian(frequency_map: &FrequencyMap, minmax_box: MinMaxBox) -> [MinMaxBox; 2] {
     // Get median
     // Split Box
     // Cut the perpendicular to longest dimension
@@ -190,6 +191,7 @@ mod test_mmcq {
     use super::*;
 
     use crate::data_models::{ BoxQueue, MinMaxBox };
+    use std::collections::HashMap;
     use image::Rgba;
 
     #[test]
@@ -219,22 +221,31 @@ mod test_mmcq {
     #[ignore]
     #[test]
     fn test_iterative_split() {
-        let rhisto: Vec<u32> = vec![3, 3, 3, 3];
-        let ghisto: Vec<u32> = vec![3, 3, 1, 1, 1, 1, 0, 2];
-        let bhisto: Vec<u32> = vec![3, 1, 2, 3, 3];
-        let dim_histograms = DimHistograms {
-            0: [
-                Histogram {
-                    0: rhisto
-                },
-                Histogram {
-                    0: ghisto
-                },
-                Histogram {
-                    0: bhisto
-                },
-            ]
-        };
+        // let rhisto: Vec<u32> = vec![3, 3, 3, 3];
+        // let ghisto: Vec<u32> = vec![3, 3, 1, 1, 1, 1, 0, 2];
+        // let bhisto: Vec<u32> = vec![3, 1, 2, 3, 3];
+        // let dim_histograms = DimHistograms {
+        //     0: [
+        //         Histogram {
+        //             0: rhisto
+        //         },
+        //         Histogram {
+        //             0: ghisto
+        //         },
+        //         Histogram {
+        //             0: bhisto
+        //         },
+        //     ]
+        // };
+        let frequency_map: FrequencyMap = FrequencyMap(
+            HashMap::from([
+                (32767, 1), (31710, 1),
+                (30653, 1),
+                (28539, 2), (27482, 1),
+                (26425, 1), (25368, 1),
+                (24311, 1), (23254, 1),
+            ])
+        );
         let minmax_box = MinMaxBox {
             rmin: 0,
             rmax: 3,
@@ -246,7 +257,7 @@ mod test_mmcq {
         let box_queue = BoxQueue {
             0: vec![minmax_box]
         };
-        let found = iterative_split(dim_histograms, box_queue);
+        let found = iterative_split(frequency_map, box_queue);
         let expected = BoxQueue {
             0: vec![
                 MinMaxBox {
