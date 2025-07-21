@@ -2,7 +2,7 @@ mod data_models;
 mod img_io;
 mod stats;
 mod mmcq;
-use crate::data_models::{ ColorChannel, MinMaxBox, BoxQueue, FrequencyMap};
+use crate::data_models::{ MinMaxBox, BoxQueue, FrequencyMap};
 use crate::mmcq::MMCQ;
 use std::error::Error;
 use image::Rgba;

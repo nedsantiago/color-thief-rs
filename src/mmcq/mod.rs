@@ -28,8 +28,8 @@ pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> 
     let green_range: u8 = minmax_box.gmax - minmax_box.gmin;
     let blue_range: u8 = minmax_box.bmax - minmax_box.bmin;
 
-    let longest_channel: ColorChannel = if (red_range >= green_range
-            && red_range >= blue_range) {
+    let longest_channel: ColorChannel = if red_range >= green_range
+            && red_range >= blue_range {
         ColorChannel::Red
     } else if green_range > red_range && green_range > blue_range {
         ColorChannel::Green
