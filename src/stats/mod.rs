@@ -1,5 +1,6 @@
 use image::Rgba;
 use std::collections::HashMap;
+use crate::mmcq::MMCQ;
 use crate::data_models::{
     Histogram, DimHistograms, FrequencyMap, MinMaxBox, ColorChannel
 };
@@ -117,6 +118,49 @@ fn replace_minmax(val: u8, min: &mut u8, max: &mut u8) -> () {
     if val > *max {
         *max = val;
     }
+}
+
+fn generate_cumul_histo(frequency_map: FrequencyMap, color_channel: ColorChannel, minmax_box: MinMaxBox) -> Histogram {
+    let frequency_map = frequency_map.0;
+    // Organize colors
+    let side_color1: ColorChannel = color_channel.clone() + 1;
+    let side_color2: ColorChannel = color_channel.clone() + 2;
+    let main_color: ColorChannel = color_channel.clone();
+
+    // Iterate through the bounding box min maxes
+    let mut isum: u32 = 0;
+    let mut total: u32 = 0;
+    let mut partialsum = Vec::new();
+    for i in minmax_box.rmin..(minmax_box.rmax + 1) {
+        isum = 0;
+        for j in minmax_box.gmin..(minmax_box.gmax + 1) {
+            for k in minmax_box.bmin..(minmax_box.bmax + 1) {
+                let rgb: [u8; 3] = match color_channel {
+                    ColorChannel::Red => {
+                        [i, j, k]
+                    },
+                    ColorChannel::Green => {
+                        [j, k, i]
+                    }
+                    ColorChannel::Blue => {
+                        [k, i, j]
+                    }
+                };
+                let color_hash = MMCQ::hash_rgb(rgb[0], rgb[1], rgb[2]);
+                let val = match frequency_map.get(&color_hash) {
+                    Some(v) => v,
+                    None => &0
+                };
+                isum += val;
+            }
+            total += isum;
+            partialsum.push(total);
+        }
+    }
+    Histogram {
+        0: partialsum
+    }
+    // Make a histogram from min to max
 }
 
 
