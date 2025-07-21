@@ -9,6 +9,7 @@ pub struct DimHistograms(pub [Histogram; 3]);
 pub struct FrequencyMap(pub HashMap<u32,u32>);
 
 #[derive(PartialEq)]
+#[derive(Clone)]
 #[derive(Debug)]
 pub struct MinMaxBox {
     pub rmin: u8,

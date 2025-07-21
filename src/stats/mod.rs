@@ -119,7 +119,7 @@ fn replace_minmax(val: u8, min: &mut u8, max: &mut u8) -> () {
     }
 }
 
-fn generate_cumul_histo(frequency_map: FrequencyMap, color_channel: ColorChannel, minmax_box: MinMaxBox) -> Histogram {
+pub fn generate_cumul_histo(frequency_map: FrequencyMap, color_channel: ColorChannel, minmax_box: MinMaxBox) -> Histogram {
     let frequency_map = frequency_map.0;
 
     // Iterate through the bounding box min maxes

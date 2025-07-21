@@ -4,6 +4,7 @@ use crate::data_models::{
     ColorChannel, MinMaxBox, Histogram,
     DimHistograms, BoxQueue, FrequencyMap
 };
+use crate::stats;
 use image::Rgba;
 
 
@@ -37,9 +38,13 @@ pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> 
         ColorChannel::Blue
     };
 
+    // NOTE may need to refactor so that this function is in
+    // main.rs (reduce dependency between libraries)
+    let histogram = stats::generate_cumul_histo(frequency_map, longest_channel, minmax_box.clone());
+
     // Split the largest MinMaxBox
     let splitted_box: [MinMaxBox; 2] = cut_at_mmcqmedian(
-        &frequency_map, minmax_box
+        &histogram, minmax_box
     );
 
     // Push new MinMaxBoxes back into BoxQueue
@@ -50,7 +55,7 @@ pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> 
     box_queue
 }
 
-fn cut_at_mmcqmedian(frequency_map: &FrequencyMap, minmax_box: MinMaxBox) -> [MinMaxBox; 2] {
+fn cut_at_mmcqmedian(histogram: &Histogram, minmax_box: MinMaxBox) -> [MinMaxBox; 2] {
     // Get median
     // Split Box
     // Cut the perpendicular to longest dimension
