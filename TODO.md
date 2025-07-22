@@ -41,20 +41,25 @@ assert vbox.count == 3143
 **Iterative Split**
 ```mermaid
 flowchart TD
-    START([START]) --> init_box_queue[/init_box_queue: BoxQueue/]
-    START --> frequency_map[/frequency_map: FrequencyMap/]
+    INPUT([INPUT])
+    start_box_queue[/start_box_queue: BoxQueue/]
+    frequency_map[/frequency_map: FrequencyMap/]
 
-    init_box_queue -->|INPUT| is_max_iterations{Is max itrerations?}
-    frequency_map -->|INPUT| is_max_iterations
-    iterations[/iterations_count: u32/] -->|=0| is_max_iterations
+    INPUT --> start_box_queue
+    INPUT --> frequency_map
 
-    is_max_iterations -->|no| begin_median_split[ ]
-    begin_median_split -->|find longest channel| longest_channel[longest_channel: ColorChannel]
-    frequency_map -->|calc_histo_slice| histogram[/cumulative_histogram: Histogram/]
-    init_box_queue -->|pop| minmax_box[/minmax_box: MinMaxBox/]
-    minmax_box -->|calc_histo_slice| histogram
-    longest_channel -->|calc_histo_slice| histogram
-    histogram --- total[/total_count: u32/]
+    start_box_queue --> pop[pop]
+    pop --> minmax_box
+
+    minmax_box[/minmax_box: MinMaxBox/] --> calc_cumulative_histo
+    calc_cumulative_histo[calc_cumulative_histo] --> histogram[/cumulative_histogram: Histogram/]
+    calc_cumulative_histo --> total[/total_count: u32/]
+
+    is_max_iterations{Is max iterations?} -->|no| begin_median_split[restart median split]
+    minmax_box --> find_longest_channel[find longest channel]
+    find_longest_channel --> longest_channel[/longest_channel: ColorChannel/]
+    frequency_map --> calc_cumulative_histo
+    longest_channel --> calc_cumulative_histo
     histogram --> calc_mmcq_median[calc_mmcq_median]
     longest_channel --> calc_mmcq_median
     total --> calc_mmcq_median
@@ -62,9 +67,10 @@ flowchart TD
     median -->|cut_at_median| two_boxes[/minmax_box, minmax_box/]
     two_boxes -->|push to box queue| box_queue[/box_queue: BoxQueue/]
     box_queue -->|increment iteration +1| is_max_iterations
-    
 
+    begin_median_split --> start_box_queue
+    
     is_max_iterations -->|yes| boxes_itersplit[/boxes_itersplit: BoxQueue/]
 
-    boxes_itersplit --> END([END])
+    boxes_itersplit --> OUTPUT([OUTPUT])
 ```
