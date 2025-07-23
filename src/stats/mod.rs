@@ -119,7 +119,7 @@ fn replace_minmax(val: u8, min: &mut u8, max: &mut u8) -> () {
     }
 }
 
-pub fn generate_cumul_histo(frequency_map: FrequencyMap, color_channel: ColorChannel, minmax_box: MinMaxBox) -> Histogram {
+pub fn calc_cumul_histo(frequency_map: FrequencyMap, color_channel: &ColorChannel, minmax_box: MinMaxBox) -> (Histogram, u32) {
     let frequency_map = frequency_map.0;
 
     // Iterate through the bounding box min maxes
@@ -128,6 +128,7 @@ pub fn generate_cumul_histo(frequency_map: FrequencyMap, color_channel: ColorCha
     for i in minmax_box.rmin..(minmax_box.rmax + 1) {
         let mut isum: u32 = 0;
         for j in minmax_box.gmin..(minmax_box.gmax + 1) {
+            isum = 0;
             for k in minmax_box.bmin..(minmax_box.bmax + 1) {
                 let rgb: [u8; 3] = match color_channel {
                     ColorChannel::Red => {
@@ -148,12 +149,16 @@ pub fn generate_cumul_histo(frequency_map: FrequencyMap, color_channel: ColorCha
                 isum += val;
             }
             total += isum;
-            partialsum.push(total);
         }
+        partialsum.push(total);
     }
-    Histogram {
-        0: partialsum
-    }
+    (
+        
+        Histogram {
+            0: partialsum
+        },
+        total
+    )
     // Make a histogram from min to max
 }
 
