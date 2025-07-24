@@ -63,8 +63,6 @@ pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> 
 }
 
 fn calc_mmcqmedian(cumsum_histogram: &Histogram, minmax_box: MinMaxBox, color_channel: &ColorChannel, total: u32) -> u8 {
-    // Calculate inverse cumulative histogram
-    // Create a cumulative histogram (may implement in main)
     let (min, max) = match color_channel {
         ColorChannel::Red => {
             (minmax_box.rmin, minmax_box.rmax)
@@ -256,22 +254,6 @@ mod test_mmcq {
     #[ignore]
     #[test]
     fn test_iterative_split() {
-        // let rhisto: Vec<u32> = vec![3, 3, 3, 3];
-        // let ghisto: Vec<u32> = vec![3, 3, 1, 1, 1, 1, 0, 2];
-        // let bhisto: Vec<u32> = vec![3, 1, 2, 3, 3];
-        // let dim_histograms = DimHistograms {
-        //     0: [
-        //         Histogram {
-        //             0: rhisto
-        //         },
-        //         Histogram {
-        //             0: ghisto
-        //         },
-        //         Histogram {
-        //             0: bhisto
-        //         },
-        //     ]
-        // };
         let frequency_map: FrequencyMap = FrequencyMap(
             HashMap::from([
                 (32767, 1), (31710, 1),
@@ -334,7 +316,7 @@ mod test_mmcq {
                  // 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1].to_vec()
                     1, 1, 2, 2, 2, 3, 3, 4, 4,
                     4, 5, 5, 5, 6, 6, 7, 7, 7,
-                    8, 8, 8, 9, 9, 10, 10, 10, 11, 12, 12].to_vec()
+                    8, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12].to_vec()
             },
             MinMaxBox {
                 rmin: 0,
