@@ -18,6 +18,27 @@ pub fn create_box_queue(minmax_box: MinMaxBox) -> BoxQueue {
 }
 
 pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> BoxQueue {
+    const MAX_ITERATIONS: u32 = 1000;
+    // While the following conditions are met
+    // - flag: max iterartions met
+    let mut is_below_iter_limit = true;
+    // - flag: result of split has data
+    let mut is_split_valid = true;
+    // - flag: target number colors hasn't been reached yet
+    let mut is_target_colors_count = true;
+    let mut iter = 0;
+    while is_below_iter_limit && is_split_valid && is_target_colors_count {
+        iter += 1;
+        if iter >= MAX_ITERATIONS {
+            is_below_iter_limit = false;
+        }
+        box_queue = split_at_mmcqmedian(&frequency_map, box_queue);
+    }
+    box_queue
+}
+
+fn split_at_mmcqmedian(frequency_map: &FrequencyMap, mut box_queue: BoxQueue) -> BoxQueue {
+    // If current box has nothing in it, skip iteration
     // Get highest MinMaxBox from a count-sorted vector
     let minmax_box: MinMaxBox = match box_queue.0.pop() {
         Some(val) => val,
@@ -253,7 +274,7 @@ mod test_mmcq {
 
     #[ignore]
     #[test]
-    fn test_iterative_split() {
+    fn test_split_at_mmcqmedian() {
         let frequency_map: FrequencyMap = FrequencyMap(
             HashMap::from([
                 (32767, 1), (31710, 1),
@@ -274,7 +295,7 @@ mod test_mmcq {
         let box_queue = BoxQueue {
             0: vec![minmax_box]
         };
-        let found = iterative_split(frequency_map, box_queue);
+        let found = split_at_mmcqmedian(&frequency_map, box_queue);
         let expected = BoxQueue {
             0: vec![
                 MinMaxBox {
