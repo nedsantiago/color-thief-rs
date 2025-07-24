@@ -74,8 +74,7 @@ fn split_at_mmcqmedian(frequency_map: &FrequencyMap, mut box_queue: BoxQueue) ->
     let splitted_box: [MinMaxBox; 2] = split_box(
         minmax_box, longest_channel, median
     );
-
-    // Push new MinMaxBoxes back into BoxQueue
+// Push new MinMaxBoxes back into BoxQueue
     for mmbox in splitted_box {
         box_queue.0.push(mmbox)
     }
@@ -145,17 +144,18 @@ fn split_box(minmax_box: MinMaxBox, color_channel: ColorChannel, split_val: u8) 
     let mut bmin = (minmax_box.bmin, minmax_box.bmin);
     let mut bmax = (minmax_box.bmax, minmax_box.bmax);
 
+    dbg!(split_val);
     match color_channel {
         ColorChannel::Red => {
-            rmin = (minmax_box.rmin, split_val);
+            rmin = (minmax_box.rmin, split_val + 1);
             rmax = (split_val, minmax_box.rmax);
         },
         ColorChannel::Green => {
-            gmin = (minmax_box.gmin, split_val);
+            gmin = (minmax_box.gmin, split_val + 1);
             gmax = (split_val, minmax_box.gmax);
         },
         ColorChannel::Blue => {
-            bmin = (minmax_box.bmin, split_val);
+            bmin = (minmax_box.bmin, split_val + 1);
             bmax = (split_val, minmax_box.bmax);
         },
     };
@@ -272,25 +272,25 @@ mod test_mmcq {
         assert_eq!(expected.0[0], found.0[0], "Logic Error:");
     }
 
-    #[ignore]
     #[test]
     fn test_split_at_mmcqmedian() {
         let frequency_map: FrequencyMap = FrequencyMap(
             HashMap::from([
-                (32767, 1), (31710, 1),
-                (30653, 1),
-                (28539, 2), (27482, 1),
-                (26425, 1), (25368, 1),
-                (24311, 1), (23254, 1),
+                (2080, 1), (4194, 1),
+                (7365, 1), (9479, 1),
+                (12650, 1), (15821, 1),
+                (17935, 1), (21106, 1),
+                (24277, 1), (26391, 1),
+                (29562, 1), (31676, 1),
             ])
         );
         let minmax_box = MinMaxBox {
-            rmin: 0,
-            rmax: 3,
-            gmin: 11,
-            gmax: 18,
+            rmin: 2,
+            rmax: 30,
+            gmin: 1,
+            gmax: 29,
             bmin: 0,
-            bmax: 4,
+            bmax: 28,
         };
         let box_queue = BoxQueue {
             0: vec![minmax_box]
@@ -299,59 +299,47 @@ mod test_mmcq {
         let expected = BoxQueue {
             0: vec![
                 MinMaxBox {
-                    rmin: 0,
-                    rmax: 3,
-                    gmin: 11,
-                    gmax: 14,
+                    rmin: 2,
+                    rmax: 8,
+                    gmin: 1,
+                    gmax: 29,
                     bmin: 0,
-                    bmax: 4,
+                    bmax: 28,
                 },
                 MinMaxBox {
-                    rmin: 0,
-                    rmax: 3,
-                    gmin: 15,
-                    gmax: 18,
+                    rmin: 9,
+                    rmax: 30,
+                    gmin: 1,
+                    gmax: 29,
                     bmin: 0,
-                    bmax: 4,
+                    bmax: 28,
                 },
             ]
         };
         assert_eq!(expected, found, "Logic Error:");
     }
 
-    // MinMaxBox {
-    //     rmin: 2,
-    //     rmax: 30,
-    //     gmin: 1,
-    //     gmax: 29,
-    //     bmin: 0,
-    //     bmax: 28,
-    // }
     #[test]
     fn test_calc_mmcqmedian() {
         let input = (
             Histogram {
                 0: [
-                 // 1, 0, 1, 0, 0, 1, 0, 1, 0,
-                 // 0, 1, 0, 0, 1, 0, 1, 0, 0,
-                 // 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1].to_vec()
                     1, 1, 2, 2, 2, 3, 3, 4, 4,
                     4, 5, 5, 5, 6, 6, 7, 7, 7,
                     8, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12].to_vec()
             },
             MinMaxBox {
-                rmin: 0,
-                rmax: 31,
-                gmin: 0,
-                gmax: 31,
-                bmin: 2,
-                bmax: 30,
+                rmin: 2,
+                rmax: 30,
+                gmin: 1,
+                gmax: 29,
+                bmin: 0,
+                bmax: 28,
             },
-            ColorChannel::Blue,
+            ColorChannel::Red,
             12 as u32,
         );
         let found = calc_mmcqmedian(&input.0, input.1, &input.2, input.3);
-        // let expected = 17;
         let expected = 8;
         assert_eq!(expected, found, "Logic Error:");
     }
