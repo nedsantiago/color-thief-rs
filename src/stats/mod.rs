@@ -119,8 +119,8 @@ fn replace_minmax(val: u8, min: &mut u8, max: &mut u8) -> () {
     }
 }
 
-pub fn generate_cumul_histo(frequency_map: FrequencyMap, color_channel: ColorChannel, minmax_box: MinMaxBox) -> Histogram {
-    let frequency_map = frequency_map.0;
+pub fn calc_cumul_histo(frequency_map: &FrequencyMap, color_channel: &ColorChannel, minmax_box: MinMaxBox) -> (Histogram, u32) {
+    let frequency_map = &frequency_map.0;
 
     // Iterate through the bounding box min maxes
     let mut total: u32 = 0;
@@ -128,6 +128,7 @@ pub fn generate_cumul_histo(frequency_map: FrequencyMap, color_channel: ColorCha
     for i in minmax_box.rmin..(minmax_box.rmax + 1) {
         let mut isum: u32 = 0;
         for j in minmax_box.gmin..(minmax_box.gmax + 1) {
+            isum = 0;
             for k in minmax_box.bmin..(minmax_box.bmax + 1) {
                 let rgb: [u8; 3] = match color_channel {
                     ColorChannel::Red => {
@@ -148,13 +149,15 @@ pub fn generate_cumul_histo(frequency_map: FrequencyMap, color_channel: ColorCha
                 isum += val;
             }
             total += isum;
-            partialsum.push(total);
         }
+        partialsum.push(total);
     }
-    Histogram {
-        0: partialsum
-    }
-    // Make a histogram from min to max
+    (
+        Histogram {
+            0: partialsum
+        },
+        total
+    )
 }
 
 
@@ -303,5 +306,38 @@ mod test_stats {
 
         assert_eq!(val, min, "Logic Error: Minimum should have been replaced");
         assert_eq!(val, max, "Logic Error: Maximum should have been replaced");
+    }
+
+    #[test]
+    fn test_calc_cumul_histo() {
+        let frequency_map: FrequencyMap = FrequencyMap(
+            HashMap::from([
+                (2080, 1), (4194, 1),
+                (7365, 1), (9479, 1),
+                (12650, 1), (15821, 1),
+                (17935, 1), (21106, 1),
+                (24277, 1), (26391, 1),
+                (29562, 1), (31676, 1),
+            ])
+        );
+
+        let color_channel: ColorChannel = ColorChannel::Red;
+        let minmax_box: MinMaxBox = MinMaxBox {
+            rmin: 2,
+            rmax: 30,
+            gmin: 1,
+            gmax: 29,
+            bmin: 0,
+            bmax: 28,
+        };
+        let expected = Histogram {
+            0: [
+                1, 1, 2, 2, 2, 3, 3, 4, 4,
+                4, 5, 5, 5, 6, 6, 7, 7, 7,
+                8, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12
+            ].to_vec()
+        };
+        let found = calc_cumul_histo(&frequency_map, &color_channel, minmax_box);
+        assert_eq!(expected.0, found.0.0, "Logic Error:");
     }
 }

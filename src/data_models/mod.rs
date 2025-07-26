@@ -2,7 +2,19 @@ use std::collections::HashMap;
 use std::ops::Add;
 
 
+#[derive(Debug)]
 pub struct Histogram(pub Vec<u32>);
+
+// Encapsulation with effectively-functional programming methods
+// impl Histogram {
+//     fn total(self) -> u32 {
+//         let mut total = 0;
+//         for count in self.0 {
+//             total += count;
+//         }
+//         total
+//     }
+// }
 
 pub struct DimHistograms(pub [Histogram; 3]);
 
@@ -46,6 +58,7 @@ impl std::fmt::Display for BoxQueue {
     }
 }
 
+#[derive(Debug)]
 #[derive(Clone)]
 pub enum ColorChannel {
     Red = 0,
