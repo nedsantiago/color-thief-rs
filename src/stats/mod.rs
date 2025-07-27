@@ -38,7 +38,6 @@ fn generate_histogram(color_ch: ColorChannel, pixels: &Vec<Rgba<u8>>) -> Histogr
     let mut histogram: Vec<u32> = Vec::new();
     let first_pixel = pixels[0];
 
-    // Assume red channel for now
     let first_val = first_pixel.0[color_ch];
     let mut min = first_val;
     let mut max = first_val;
@@ -122,33 +121,55 @@ fn replace_minmax(val: u8, min: &mut u8, max: &mut u8) -> () {
 pub fn calc_cumul_histo(frequency_map: &FrequencyMap, color_channel: &ColorChannel, minmax_box: MinMaxBox) -> (Histogram, u32) {
     let frequency_map = &frequency_map.0;
 
+    let ijk_range: [u8; 6] = match color_channel {
+        ColorChannel::Red => {
+            [
+                minmax_box.rmin,
+                minmax_box.rmax,
+                minmax_box.gmin,
+                minmax_box.gmax,
+                minmax_box.bmin,
+                minmax_box.bmax,
+            ]
+        },
+        ColorChannel::Green => {
+            [
+                minmax_box.gmin,
+                minmax_box.gmax,
+                minmax_box.bmin,
+                minmax_box.bmax,
+                minmax_box.rmin,
+                minmax_box.rmax,
+            ]
+        },
+        ColorChannel::Blue => {
+            [
+                minmax_box.bmin,
+                minmax_box.bmax,
+                minmax_box.rmin,
+                minmax_box.rmax,
+                minmax_box.gmin,
+                minmax_box.gmax,
+            ]
+        },
+    };
+
     // Iterate through the bounding box min maxes
     let mut total: u32 = 0;
     let mut partialsum = Vec::new();
-    for i in minmax_box.rmin..(minmax_box.rmax + 1) {
+    for i in ijk_range[0]..(ijk_range[1] + 1) {
         let mut isum: u32 = 0;
-        for j in minmax_box.gmin..(minmax_box.gmax + 1) {
+        for j in ijk_range[2]..(ijk_range[3] + 1) {
             isum = 0;
-            for k in minmax_box.bmin..(minmax_box.bmax + 1) {
-                let rgb: [u8; 3] = match color_channel {
-                    ColorChannel::Red => {
-                        [i, j, k]
-                    },
-                    ColorChannel::Green => {
-                        [j, k, i]
-                    }
-                    ColorChannel::Blue => {
-                        [k, i, j]
-                    }
-                };
-                let color_hash = MMCQ::hash_rgb(rgb[0], rgb[1], rgb[2]);
+            for k in ijk_range[4]..(ijk_range[5] + 1) {
+                let color_hash = MMCQ::hash_rgb(i, j, k);
                 let val = match frequency_map.get(&color_hash) {
                     Some(v) => v,
                     None => &0
                 };
                 isum += val;
             }
-            total += isum;
+        total += isum;
         }
         partialsum.push(total);
     }
@@ -217,6 +238,28 @@ mod test_stats {
         let expected = Histogram(
             vec![
                 4, 4,
+            ]
+        ).0;
+        assert_eq!(expected, found, "Logic Error:");
+    }
+
+    #[ignore]
+    #[test]
+    fn test_calc_histogram3() {
+        let input: Vec<Rgba<u8>> = vec![
+            Rgba::from([ 16,   8,   0, 255]), Rgba::from([ 32,  24,  16, 255]),
+            Rgba::from([ 56,  48,  40, 255]), Rgba::from([ 72,  64,  56, 255]),
+            Rgba::from([ 96,  88,  80, 255]), Rgba::from([120, 112, 104, 255]),
+            Rgba::from([136, 128, 120, 255]), Rgba::from([160, 152, 144, 255]),
+            Rgba::from([184, 176, 168, 255]), Rgba::from([200, 192, 184, 255]),
+            Rgba::from([224, 216, 208, 255]), Rgba::from([240, 232, 224, 255]),
+        ];
+        let found = calc_histogram(ColorChannel::Red, &input).0;
+        let expected = Histogram(
+            vec![
+                1, 1, 2, 2, 2, 3, 3, 4, 4, 4,
+                5, 5, 5, 6, 6, 7, 7, 7, 8, 8,
+                8, 9, 9, 10, 10, 10, 11, 11, 12
             ]
         ).0;
         assert_eq!(expected, found, "Logic Error:");
@@ -309,7 +352,7 @@ mod test_stats {
     }
 
     #[test]
-    fn test_calc_cumul_histo() {
+    fn test_calc_cumul_histo0() {
         let frequency_map: FrequencyMap = FrequencyMap(
             HashMap::from([
                 (2080, 1), (4194, 1),
@@ -335,6 +378,41 @@ mod test_stats {
                 1, 1, 2, 2, 2, 3, 3, 4, 4,
                 4, 5, 5, 5, 6, 6, 7, 7, 7,
                 8, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12
+            ].to_vec()
+        };
+        let found = calc_cumul_histo(&frequency_map, &color_channel, minmax_box);
+        assert_eq!(expected.0, found.0.0, "Logic Error:");
+    }
+
+    #[test]
+    fn test_calc_cumul_histo1() {
+        let frequency_map: FrequencyMap = FrequencyMap(
+            HashMap::from([
+                (2080, 1), (4194, 1),
+                (7365, 1), (9479, 1),
+                (12650, 1), (15821, 1),
+                (17935, 1), (21106, 1),
+                (24277, 1), (26391, 1),
+                (29562, 1), (31676, 1),
+            ])
+        );
+
+        let color_channel: ColorChannel = ColorChannel::Green;
+        let minmax_box: MinMaxBox = MinMaxBox {
+            rmin: 9,
+            rmax: 30,
+            gmin: 1,
+            gmax: 29,
+            bmin: 0,
+            bmax: 28,
+        };
+        let expected = Histogram {
+            0: [
+                0, 0, 0, 0, 0, 0,
+                0, 1, 1, 1, 2, 2,
+                2, 3, 3, 4, 4, 4,
+                5, 5, 5, 6, 6, 7,
+                7, 7, 8, 8, 9
             ].to_vec()
         };
         let found = calc_cumul_histo(&frequency_map, &color_channel, minmax_box);

@@ -33,6 +33,7 @@ pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> 
             is_below_iter_limit = false;
         }
         box_queue = split_at_mmcqmedian(&frequency_map, box_queue);
+        println!("Iter: {}\n", iter);
     }
     box_queue
 }
@@ -53,7 +54,7 @@ fn split_at_mmcqmedian(frequency_map: &FrequencyMap, mut box_queue: BoxQueue) ->
     let longest_channel: ColorChannel = if red_range >= green_range
             && red_range >= blue_range {
         ColorChannel::Red
-    } else if green_range > red_range && green_range > blue_range {
+    } else if green_range >= red_range && green_range >= blue_range {
         ColorChannel::Green
     } else {
         ColorChannel::Blue
@@ -118,19 +119,31 @@ fn calc_mmcqmedian(cumsum_histogram: &Histogram, minmax_box: MinMaxBox, color_ch
     if lower_range <= upper_range {
         // Adjust median (NOTE what if median was at maximum value?)
         // NOTE color-thief-py rounds a float here thus modulo was used
+        dbg!(median);
+        dbg!(upper_range);
+        dbg!(max);
+        dbg!(median + (upper_range / 2) + upper_range % 2);
         median = cmp::min(max - 1, median + (upper_range / 2) + upper_range % 2);
     } else {
-        dbg!(median - 1 - lower_range / 2);
+        dbg!(median);
+        dbg!(lower_range);
+        dbg!(min);
+        dbg!(median - 1 - (lower_range / 2 + lower_range % 2));
         median = cmp::max(min, median - 1 - (lower_range / 2 + lower_range % 2));
     }
     // Adjust the median to a bin with a count
-    dbg!(cumsum_histogram[median as usize]);
     while cumsum_histogram[(median - min) as usize] == 0 {
         median += 1;
     }
     // If walked median is the total, move back when possible
-    dbg!((total - cumsum_histogram[median as usize] == 0) && cumsum_histogram[(median - 1) as usize] != 0);
-    while (total - cumsum_histogram[median as usize] == 0) && cumsum_histogram[(median - 1) as usize] != 0 {
+    let current_cumsum = cumsum_histogram[(median - min) as usize];
+    let previous_cumsum = match cumsum_histogram.get((median - min - 1) as usize) {
+        Some(val) => val,
+        None => panic!("No value! likely a -1 index"),
+    };
+    while (total - cumsum_histogram[(median - min) as usize] == 0) &&
+        median - min - 1 > 0 &&
+        median > 0 {
         median -= 1;
     }
     median
@@ -272,8 +285,48 @@ mod test_mmcq {
         assert_eq!(expected.0[0], found.0[0], "Logic Error:");
     }
 
+    #[ignore]
     #[test]
-    fn test_split_at_mmcqmedian() {
+    fn test_iterative_split() {
+        let frequency_map: FrequencyMap = FrequencyMap(
+            HashMap::from([
+                (2080, 1), (4194, 1),
+                (7365, 1), (9479, 1),
+                (12650, 1), (15821, 1),
+                (17935, 1), (21106, 1),
+                (24277, 1), (26391, 1),
+                (29562, 1), (31676, 1),
+            ])
+        );
+        let minmax_box = MinMaxBox {
+            rmin: 2,
+            rmax: 30,
+            gmin: 1,
+            gmax: 29,
+            bmin: 0,
+            bmax: 28,
+        };
+        let box_queue = BoxQueue {
+            0: vec![minmax_box]
+        };
+        let found = iterative_split(frequency_map, box_queue);
+        let expected = BoxQueue {
+            0: vec![
+                MinMaxBox { rmin:  9, rmax: 30, gmin:  1, gmax:  9, bmin:  0, bmax: 28 },
+                MinMaxBox { rmin:  9, rmax: 30, gmin: 10, gmax: 29, bmin:  0, bmax: 10 },
+                MinMaxBox { rmin: 16, rmax: 30, gmin: 10, gmax: 16, bmin: 11, bmax: 28 },
+                MinMaxBox { rmin: 16, rmax: 30, gmin: 17, gmax: 29, bmin: 11, bmax: 18 },
+                MinMaxBox { rmin:  2, rmax:  8, gmin:  1, gmax: 29, bmin:  0, bmax: 28 },
+                MinMaxBox { rmin: 16, rmax: 23, gmin: 17, gmax: 29, bmin: 19, bmax: 28 },
+                MinMaxBox { rmin: 16, rmax: 23, gmin: 17, gmax: 29, bmin: 19, bmax: 28 },
+                MinMaxBox { rmin: 24, rmax: 30, gmin: 17, gmax: 29, bmin: 19, bmax: 28 },
+            ]
+        };
+        assert_eq!(expected, found, "Logic Error:");
+    }
+
+    #[test]
+    fn test_split_at_mmcqmedian0() {
         let frequency_map: FrequencyMap = FrequencyMap(
             HashMap::from([
                 (2080, 1), (4194, 1),
@@ -310,6 +363,54 @@ mod test_mmcq {
                     rmin: 9,
                     rmax: 30,
                     gmin: 1,
+                    gmax: 29,
+                    bmin: 0,
+                    bmax: 28,
+                },
+            ]
+        };
+        assert_eq!(expected, found, "Logic Error:");
+    }
+
+    #[ignore]
+    #[test]
+    fn test_split_at_mmcqmedian1() {
+        let frequency_map: FrequencyMap = FrequencyMap(
+            HashMap::from([
+                (2080, 1), (4194, 1),
+                (7365, 1), (9479, 1),
+                (12650, 1), (15821, 1),
+                (17935, 1), (21106, 1),
+                (24277, 1), (26391, 1),
+                (29562, 1), (31676, 1),
+            ])
+        );
+        let minmax_box = MinMaxBox {
+            rmin: 9,
+            rmax: 30,
+            gmin: 1,
+            gmax: 29,
+            bmin: 0,
+            bmax: 28,
+        };
+        let box_queue = BoxQueue {
+            0: vec![minmax_box]
+        };
+        let found = split_at_mmcqmedian(&frequency_map, box_queue);
+        let expected = BoxQueue {
+            0: vec![
+                MinMaxBox {
+                    rmin: 9,
+                    rmax: 30,
+                    gmin: 1,
+                    gmax: 9,
+                    bmin: 0,
+                    bmax: 28,
+                },
+                MinMaxBox {
+                    rmin: 9,
+                    rmax: 30,
+                    gmin: 10,
                     gmax: 29,
                     bmin: 0,
                     bmax: 28,
