@@ -18,6 +18,27 @@ pub fn create_box_queue(minmax_box: MinMaxBox) -> BoxQueue {
 }
 
 pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> BoxQueue {
+    const MAX_ITERATIONS: u32 = 1000;
+    // While the following conditions are met
+    // - flag: max iterartions met
+    let mut is_below_iter_limit = true;
+    // - flag: result of split has data
+    let mut is_split_valid = true;
+    // - flag: target number colors hasn't been reached yet
+    let mut is_target_colors_count = true;
+    let mut iter = 0;
+    while is_below_iter_limit && is_split_valid && is_target_colors_count {
+        iter += 1;
+        if iter >= MAX_ITERATIONS {
+            is_below_iter_limit = false;
+        }
+        box_queue = split_at_mmcqmedian(&frequency_map, box_queue);
+    }
+    box_queue
+}
+
+fn split_at_mmcqmedian(frequency_map: &FrequencyMap, mut box_queue: BoxQueue) -> BoxQueue {
+    // If current box has nothing in it, skip iteration
     // Get highest MinMaxBox from a count-sorted vector
     let minmax_box: MinMaxBox = match box_queue.0.pop() {
         Some(val) => val,
@@ -40,14 +61,20 @@ pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> 
 
     // NOTE may need to refactor so that this function is in
     // main.rs (reduce dependency between libraries)
-    let histogram = stats::generate_cumul_histo(frequency_map, longest_channel, minmax_box.clone());
+    let (cumulative_histo, total) = stats::calc_cumul_histo(frequency_map, &longest_channel, minmax_box.clone());
+
+    // Calculate MMCQ Median
+    dbg!(&cumulative_histo);
+    dbg!(&minmax_box);
+    dbg!(&longest_channel);
+    dbg!(&total);
+    let median = calc_mmcqmedian(&cumulative_histo, minmax_box.clone(), &longest_channel, total);
 
     // Split the largest MinMaxBox
-    let splitted_box: [MinMaxBox; 2] = cut_at_mmcqmedian(
-        &histogram, minmax_box
+    let splitted_box: [MinMaxBox; 2] = split_box(
+        minmax_box, longest_channel, median
     );
-
-    // Push new MinMaxBoxes back into BoxQueue
+// Push new MinMaxBoxes back into BoxQueue
     for mmbox in splitted_box {
         box_queue.0.push(mmbox)
     }
@@ -55,49 +82,32 @@ pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> 
     box_queue
 }
 
-fn cut_at_mmcqmedian(histogram: &Histogram, minmax_box: MinMaxBox) -> [MinMaxBox; 2] {
-    // Get median
-    // Split Box
-    // Cut the perpendicular to longest dimension
-    [
-        MinMaxBox {
-            rmin: minmax_box.rmin,
-            rmax: minmax_box.rmax,
-            gmin: minmax_box.gmin,
-            gmax: minmax_box.gmax,
-            bmin: minmax_box.bmin,
-            bmax: minmax_box.bmax,
+fn calc_mmcqmedian(cumsum_histogram: &Histogram, minmax_box: MinMaxBox, color_channel: &ColorChannel, total: u32) -> u8 {
+    let (min, max) = match color_channel {
+        ColorChannel::Red => {
+            (minmax_box.rmin, minmax_box.rmax)
         },
-        MinMaxBox {
-            rmin: minmax_box.rmin,
-            rmax: minmax_box.rmax,
-            gmin: minmax_box.gmin,
-            gmax: minmax_box.gmax,
-            bmin: minmax_box.bmin,
-            bmax: minmax_box.bmax,
+        ColorChannel::Green => {
+            (minmax_box.gmin, minmax_box.gmax)
         },
-    ]
-    // After you get median, split the MinMaxBox
-}
+        ColorChannel::Blue => {
+            (minmax_box.bmin, minmax_box.bmax)
+        },
+    };
 
-fn calc_mmcqmedian(histogram: Histogram, min: u8, max: u8, total: u32) -> u8 {
-    // Calculate inverse cumulative histogram
-    // Create a cumulative histogram (may implement in main)
     let median_target: u32 = total / 2;
-    let mut cumsum: u32 = 0;
+    let cumsum_histogram = &cumsum_histogram.0;
     let mut median: u8 = 0;
+    dbg!(median_target);
     // Find the median based on count (true median)
-    let mut cumsum_histogram: Vec<u32> = Vec::new();
-    for (i, &count) in histogram.0.iter().enumerate() {
-        cumsum += count;
-        cumsum_histogram.push(cumsum);
-        if cumsum > median_target {
+    for (i, &count) in cumsum_histogram.iter().enumerate() {
+        if count > median_target {
             median = i as u8;
             break;
         }
     }
-    median += min;
     dbg!(median);
+    median += min;
 
     // Adjust the median to the larger cut
     let lower_range: u8 = median - min;
@@ -115,7 +125,7 @@ fn calc_mmcqmedian(histogram: Histogram, min: u8, max: u8, total: u32) -> u8 {
     }
     // Adjust the median to a bin with a count
     dbg!(cumsum_histogram[median as usize]);
-    while cumsum_histogram[median as usize] == 0 {
+    while cumsum_histogram[(median - min) as usize] == 0 {
         median += 1;
     }
     // If walked median is the total, move back when possible
@@ -126,9 +136,48 @@ fn calc_mmcqmedian(histogram: Histogram, min: u8, max: u8, total: u32) -> u8 {
     median
 }
 
-fn split_box(minmax_box: MinMaxBox, split_val: u8) {
-    // Create a left box
-    // Create a right box
+fn split_box(minmax_box: MinMaxBox, color_channel: ColorChannel, split_val: u8) -> [MinMaxBox; 2]{
+    let mut rmin = (minmax_box.rmin, minmax_box.rmin);
+    let mut rmax = (minmax_box.rmax, minmax_box.rmax);
+    let mut gmin = (minmax_box.gmin, minmax_box.gmin);
+    let mut gmax = (minmax_box.gmax, minmax_box.gmax);
+    let mut bmin = (minmax_box.bmin, minmax_box.bmin);
+    let mut bmax = (minmax_box.bmax, minmax_box.bmax);
+
+    dbg!(split_val);
+    match color_channel {
+        ColorChannel::Red => {
+            rmin = (minmax_box.rmin, split_val + 1);
+            rmax = (split_val, minmax_box.rmax);
+        },
+        ColorChannel::Green => {
+            gmin = (minmax_box.gmin, split_val + 1);
+            gmax = (split_val, minmax_box.gmax);
+        },
+        ColorChannel::Blue => {
+            bmin = (minmax_box.bmin, split_val + 1);
+            bmax = (split_val, minmax_box.bmax);
+        },
+    };
+
+    [
+        MinMaxBox {
+            rmin: rmin.0,
+            rmax: rmax.0,
+            gmin: gmin.0,
+            gmax: gmax.0,
+            bmin: bmin.0,
+            bmax: bmax.0,
+        },
+        MinMaxBox {
+            rmin: rmin.1,
+            rmax: rmax.1,
+            gmin: gmin.1,
+            gmax: gmax.1,
+            bmin: bmin.1,
+            bmax: bmax.1,
+        },
+    ]
 }
 
 fn two_phase_split(dim_histograms: DimHistograms, minmax_boxes: Vec<MinMaxBox>) {
@@ -223,92 +272,74 @@ mod test_mmcq {
         assert_eq!(expected.0[0], found.0[0], "Logic Error:");
     }
 
-    #[ignore]
     #[test]
-    fn test_iterative_split() {
-        // let rhisto: Vec<u32> = vec![3, 3, 3, 3];
-        // let ghisto: Vec<u32> = vec![3, 3, 1, 1, 1, 1, 0, 2];
-        // let bhisto: Vec<u32> = vec![3, 1, 2, 3, 3];
-        // let dim_histograms = DimHistograms {
-        //     0: [
-        //         Histogram {
-        //             0: rhisto
-        //         },
-        //         Histogram {
-        //             0: ghisto
-        //         },
-        //         Histogram {
-        //             0: bhisto
-        //         },
-        //     ]
-        // };
+    fn test_split_at_mmcqmedian() {
         let frequency_map: FrequencyMap = FrequencyMap(
             HashMap::from([
-                (32767, 1), (31710, 1),
-                (30653, 1),
-                (28539, 2), (27482, 1),
-                (26425, 1), (25368, 1),
-                (24311, 1), (23254, 1),
+                (2080, 1), (4194, 1),
+                (7365, 1), (9479, 1),
+                (12650, 1), (15821, 1),
+                (17935, 1), (21106, 1),
+                (24277, 1), (26391, 1),
+                (29562, 1), (31676, 1),
             ])
         );
         let minmax_box = MinMaxBox {
-            rmin: 0,
-            rmax: 3,
-            gmin: 11,
-            gmax: 18,
+            rmin: 2,
+            rmax: 30,
+            gmin: 1,
+            gmax: 29,
             bmin: 0,
-            bmax: 4,
+            bmax: 28,
         };
         let box_queue = BoxQueue {
             0: vec![minmax_box]
         };
-        let found = iterative_split(frequency_map, box_queue);
+        let found = split_at_mmcqmedian(&frequency_map, box_queue);
         let expected = BoxQueue {
             0: vec![
                 MinMaxBox {
-                    rmin: 0,
-                    rmax: 3,
-                    gmin: 11,
-                    gmax: 14,
+                    rmin: 2,
+                    rmax: 8,
+                    gmin: 1,
+                    gmax: 29,
                     bmin: 0,
-                    bmax: 4,
+                    bmax: 28,
                 },
                 MinMaxBox {
-                    rmin: 0,
-                    rmax: 3,
-                    gmin: 15,
-                    gmax: 18,
+                    rmin: 9,
+                    rmax: 30,
+                    gmin: 1,
+                    gmax: 29,
                     bmin: 0,
-                    bmax: 4,
+                    bmax: 28,
                 },
             ]
         };
         assert_eq!(expected, found, "Logic Error:");
     }
 
-    // MinMaxBox {
-    //     rmin: 2,
-    //     rmax: 30,
-    //     gmin: 1,
-    //     gmax: 29,
-    //     bmin: 0,
-    //     bmax: 28,
-    // }
     #[test]
     fn test_calc_mmcqmedian() {
         let input = (
             Histogram {
                 0: [
-                    1, 0, 1, 0, 0, 1, 0, 1, 0,
-                    0, 1, 0, 0, 1, 0, 1, 0, 0,
-                    1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1].to_vec()
+                    1, 1, 2, 2, 2, 3, 3, 4, 4,
+                    4, 5, 5, 5, 6, 6, 7, 7, 7,
+                    8, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12].to_vec()
             },
-            2 as u8,
-            30 as u8,
+            MinMaxBox {
+                rmin: 2,
+                rmax: 30,
+                gmin: 1,
+                gmax: 29,
+                bmin: 0,
+                bmax: 28,
+            },
+            ColorChannel::Red,
             12 as u32,
         );
-        let found = calc_mmcqmedian(input.0, input.1, input.2, input.3);
-        // let expected = 17;
+        let found = calc_mmcqmedian(&input.0, input.1, &input.2, input.3);
         let expected = 8;
         assert_eq!(expected, found, "Logic Error:");
     }
