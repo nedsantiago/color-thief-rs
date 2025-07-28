@@ -121,38 +121,14 @@ fn replace_minmax(val: u8, min: &mut u8, max: &mut u8) -> () {
 pub fn calc_cumul_histo(frequency_map: &FrequencyMap, color_channel: &ColorChannel, minmax_box: MinMaxBox) -> (Histogram, u32) {
     let frequency_map = &frequency_map.0;
 
-    let ijk_range: [u8; 6] = match color_channel {
-        ColorChannel::Red => {
-            [
-                minmax_box.rmin,
-                minmax_box.rmax,
-                minmax_box.gmin,
-                minmax_box.gmax,
-                minmax_box.bmin,
-                minmax_box.bmax,
-            ]
-        },
-        ColorChannel::Green => {
-            [
-                minmax_box.gmin,
-                minmax_box.gmax,
-                minmax_box.bmin,
-                minmax_box.bmax,
-                minmax_box.rmin,
-                minmax_box.rmax,
-            ]
-        },
-        ColorChannel::Blue => {
-            [
-                minmax_box.bmin,
-                minmax_box.bmax,
-                minmax_box.rmin,
-                minmax_box.rmax,
-                minmax_box.gmin,
-                minmax_box.gmax,
-            ]
-        },
-    };
+    let ijk_range: [u8; 6] = [
+        minmax_box.rmin,
+        minmax_box.rmax,
+        minmax_box.gmin,
+        minmax_box.gmax,
+        minmax_box.bmin,
+        minmax_box.bmax,
+    ];
 
     // Iterate through the bounding box min maxes
     let mut total: u32 = 0;
@@ -388,8 +364,8 @@ mod test_stats {
     fn test_calc_cumul_histo1() {
         let frequency_map: FrequencyMap = FrequencyMap(
             HashMap::from([
-                (2080, 1), (4194, 1),
-                (7365, 1), (9479, 1),
+                ( 2080, 1), ( 4194, 1),
+                ( 7365, 1), ( 9479, 1),
                 (12650, 1), (15821, 1),
                 (17935, 1), (21106, 1),
                 (24277, 1), (26391, 1),
