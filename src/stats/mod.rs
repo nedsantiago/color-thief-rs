@@ -133,12 +133,21 @@ pub fn calc_cumul_histo(frequency_map: &FrequencyMap, color_channel: &ColorChann
     // Iterate through the bounding box min maxes
     let mut total: u32 = 0;
     let mut partialsum = Vec::new();
-    for i in ijk_range[0]..(ijk_range[1] + 1) {
+    let i_: usize = ((color_channel.clone() as usize) * 2 + 0) % 6;
+    let j_: usize = ((color_channel.clone() as usize) * 2 + 2) % 6;
+    let k_: usize = ((color_channel.clone() as usize) * 2 + 4) % 6;
+    dbg!(color_channel, i_, j_, k_);
+    for i in ijk_range[i_]..(ijk_range[i_ + 1] + 1) {
         let mut isum: u32 = 0;
-        for j in ijk_range[2]..(ijk_range[3] + 1) {
+        for j in ijk_range[j_]..(ijk_range[j_ + 1] + 1) {
             isum = 0;
-            for k in ijk_range[4]..(ijk_range[5] + 1) {
-                let color_hash = MMCQ::hash_rgb(i, j, k);
+            for k in ijk_range[k_]..(ijk_range[k_ + 1] + 1) {
+                let ijk = [i, j, k];
+                let color_hash = match color_channel {
+                    ColorChannel::Red => {MMCQ::hash_rgb(i, j, k)},
+                    ColorChannel::Green => {MMCQ::hash_rgb(k, i, j)},
+                    ColorChannel::Blue => {MMCQ::hash_rgb(j, k, i)},
+                };
                 let val = match frequency_map.get(&color_hash) {
                     Some(v) => v,
                     None => &0
