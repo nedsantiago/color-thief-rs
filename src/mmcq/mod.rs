@@ -18,6 +18,7 @@ pub fn create_box_queue(minmax_box: MinMaxBox) -> BoxQueue {
 }
 
 pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> BoxQueue {
+    let target_colors_count: u32 = 10;
     const MAX_ITERATIONS: u32 = 1000;
     // While the following conditions are met
     // - flag: max iterartions met
@@ -31,6 +32,9 @@ pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> 
         iter += 1;
         if iter >= MAX_ITERATIONS {
             is_below_iter_limit = false;
+        }
+        if box_queue.0.len() as u32 >= target_colors_count {
+            is_target_colors_count = false;
         }
         box_queue = split_at_mmcqmedian(&frequency_map, box_queue);
         println!("Iter: {}\n", iter);
@@ -49,6 +53,7 @@ fn split_at_mmcqmedian(frequency_map: &FrequencyMap, mut box_queue: BoxQueue) ->
     // Find longest dimension in MinMaxBox (biggest range)
     let red_range: u8 = minmax_box.rmax - minmax_box.rmin;
     let green_range: u8 = minmax_box.gmax - minmax_box.gmin;
+    dbg!(&minmax_box);
     let blue_range: u8 = minmax_box.bmax - minmax_box.bmin;
 
     let longest_channel: ColorChannel = if red_range >= green_range
@@ -285,7 +290,6 @@ mod test_mmcq {
         assert_eq!(expected.0[0], found.0[0], "Logic Error:");
     }
 
-    #[ignore]
     #[test]
     fn test_iterative_split() {
         let frequency_map: FrequencyMap = FrequencyMap(
@@ -372,7 +376,6 @@ mod test_mmcq {
         assert_eq!(expected, found, "Logic Error:");
     }
 
-    #[ignore]
     #[test]
     fn test_split_at_mmcqmedian1() {
         let frequency_map: FrequencyMap = FrequencyMap(

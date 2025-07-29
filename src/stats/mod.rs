@@ -228,7 +228,6 @@ mod test_stats {
         assert_eq!(expected, found, "Logic Error:");
     }
 
-    #[ignore]
     #[test]
     fn test_calc_histogram3() {
         let input: Vec<Rgba<u8>> = vec![
