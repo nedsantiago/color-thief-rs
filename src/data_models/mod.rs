@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::ops::Add;
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct Histogram(pub Vec<u32>);
 
 // Encapsulation with effectively-functional programming methods
@@ -16,13 +16,23 @@ pub struct Histogram(pub Vec<u32>);
 //     }
 // }
 
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct DimHistograms(pub [Histogram; 3]);
 
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct FrequencyMap(pub HashMap<u32,u32>);
 
-#[derive(PartialEq)]
-#[derive(Clone)]
-#[derive(Debug)]
+impl std::fmt::Display for FrequencyMap {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(
+            f,
+            "{:?}",
+            self.0
+        )
+    }
+}
+
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct MinMaxBox {
     pub rmin: u8,
     pub rmax: u8,
@@ -36,7 +46,7 @@ impl std::fmt::Display for MinMaxBox {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
             f,
-            "r({},{}), g({},{}), b({},{})",
+            "MinMaxBox(R({},{}), G({},{}), B({},{}))",
             self.rmin, self.rmax,
             self.gmin, self.gmax,
             self.bmin, self.bmax,
@@ -44,8 +54,7 @@ impl std::fmt::Display for MinMaxBox {
     }
 }
 
-#[derive(PartialEq)]
-#[derive(Debug)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct BoxQueue(pub Vec<MinMaxBox>);
 
 impl std::fmt::Display for BoxQueue {
@@ -58,8 +67,7 @@ impl std::fmt::Display for BoxQueue {
     }
 }
 
-#[derive(Debug)]
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub enum ColorChannel {
     Red = 0,
     Green = 1,
