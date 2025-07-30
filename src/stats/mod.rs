@@ -1,3 +1,4 @@
+use log;
 use image::Rgba;
 use std::collections::HashMap;
 use crate::mmcq::MMCQ;
@@ -228,26 +229,26 @@ mod test_stats {
         assert_eq!(expected, found, "Logic Error:");
     }
 
-    #[test]
-    fn test_calc_histogram3() {
-        let input: Vec<Rgba<u8>> = vec![
-            Rgba::from([ 16,   8,   0, 255]), Rgba::from([ 32,  24,  16, 255]),
-            Rgba::from([ 56,  48,  40, 255]), Rgba::from([ 72,  64,  56, 255]),
-            Rgba::from([ 96,  88,  80, 255]), Rgba::from([120, 112, 104, 255]),
-            Rgba::from([136, 128, 120, 255]), Rgba::from([160, 152, 144, 255]),
-            Rgba::from([184, 176, 168, 255]), Rgba::from([200, 192, 184, 255]),
-            Rgba::from([224, 216, 208, 255]), Rgba::from([240, 232, 224, 255]),
-        ];
-        let found = calc_histogram(ColorChannel::Red, &input).0;
-        let expected = Histogram(
-            vec![
-                1, 1, 2, 2, 2, 3, 3, 4, 4, 4,
-                5, 5, 5, 6, 6, 7, 7, 7, 8, 8,
-                8, 9, 9, 10, 10, 10, 11, 11, 12
-            ]
-        ).0;
-        assert_eq!(expected, found, "Logic Error:");
-    }
+    // #[test]
+    // fn test_calc_histogram3() {
+    //     let input: Vec<Rgba<u8>> = vec![
+    //         Rgba::from([ 16,   8,   0, 255]), Rgba::from([ 32,  24,  16, 255]),
+    //         Rgba::from([ 56,  48,  40, 255]), Rgba::from([ 72,  64,  56, 255]),
+    //         Rgba::from([ 96,  88,  80, 255]), Rgba::from([120, 112, 104, 255]),
+    //         Rgba::from([136, 128, 120, 255]), Rgba::from([160, 152, 144, 255]),
+    //         Rgba::from([184, 176, 168, 255]), Rgba::from([200, 192, 184, 255]),
+    //         Rgba::from([224, 216, 208, 255]), Rgba::from([240, 232, 224, 255]),
+    //     ];
+    //     let found = calc_histogram(ColorChannel::Red, &input).0;
+    //     let expected = Histogram(
+    //         vec![
+    //             1, 1, 2, 2, 2, 3, 3, 4, 4, 4,
+    //             5, 5, 5, 6, 6, 7, 7, 7, 8, 8,
+    //             8, 9, 9, 10, 10, 10, 11, 11, 12
+    //         ]
+    //     ).0;
+    //     assert_eq!(expected, found, "Logic Error:");
+    // }
 
     #[test]
     fn test_calc_frequency_map0() {

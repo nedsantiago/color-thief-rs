@@ -1,3 +1,4 @@
+use log;
 use std::vec::Vec;
 use std::cmp;
 use crate::data_models::{
@@ -18,6 +19,7 @@ pub fn create_box_queue(minmax_box: MinMaxBox) -> BoxQueue {
 }
 
 pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> BoxQueue {
+    log::debug!("iterative_split received:\nFrequency Map: {}  and\n {}", frequency_map, box_queue);
     let target_colors_count: u32 = 10;
     const MAX_ITERATIONS: u32 = 1000;
     // While the following conditions are met
@@ -37,8 +39,13 @@ pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> 
             is_target_colors_count = false;
         }
         box_queue = split_at_mmcqmedian(&frequency_map, box_queue);
-        println!("Iter: {}\n", iter);
+        box_queue.sort_by(|a, b| {
+            // implement count in box_queue
+            // then compare counts
+            // then use a match case for Ordering (?)
+        });
     }
+    log::debug!("iterative_split: Iterated {} times.", iter);
     box_queue
 }
 
