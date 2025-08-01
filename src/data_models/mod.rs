@@ -32,6 +32,15 @@ impl std::fmt::Display for FrequencyMap {
     }
 }
 
+impl count for FrequencyMap(&self, minmax_box: &MinMaxBox, hash_alg: Fn([u8; 3]) -> u32 ) {
+    for r in minmax_box.rmin..(minmax_box.rmax + 1) {
+        for g in minmax_box.gmin..(minmax_box.gmax + 1) {
+            for b in minmax_box.bmin..(minmax_box.bmax + 1) {
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct MinMaxBox {
     pub rmin: u8,
