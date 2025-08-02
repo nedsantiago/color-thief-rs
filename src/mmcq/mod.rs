@@ -39,11 +39,11 @@ pub fn iterative_split(frequency_map: FrequencyMap, mut box_queue: BoxQueue) -> 
             is_target_colors_count = false;
         }
         box_queue = split_at_mmcqmedian(&frequency_map, box_queue);
-        box_queue.sort_by(|a, b| {
-            // implement count in box_queue
-            // then compare counts
-            // then use a match case for Ordering (?)
-        });
+        // box_queue.sort_by(|a, b| {
+        //     // implement count in box_queue
+        //     // then compare counts
+        //     // then use a match case for Ordering (?)
+        // });
     }
     log::debug!("iterative_split: Iterated {} times.", iter);
     box_queue
