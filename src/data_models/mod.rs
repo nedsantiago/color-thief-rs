@@ -107,6 +107,7 @@ impl Add<i32> for ColorChannel {
 mod test_data_models {
     use super::*;
 
+    crate::mmcq::{ MMCQ };
     use::std::collections::HashMap;
 
     #[test]
@@ -130,7 +131,9 @@ mod test_data_models {
             bmax: 28,
         };
         let expected = 12;
-        let found = frequency_map.count(minmax_box);
+        let found = frequency_map.count(minmax_box, |[u8; 3]| -> u32 {
+            hash_rgb()
+        } );
         assert_eq!(expected, found, "Logic Error:");
     }
 }
